@@ -1,0 +1,38 @@
+--- dynamic_op.c
++++ dynamic_op.c
+@@ -3,15 +3,21 @@
+ #define max_type(A, B) (DYN_TYPE(A) > DYN_TYPE(B)) ? DYN_TYPE(A) : DYN_TYPE(B)
+ 
+ 
+-#define CHECK_REFERENCE(X1, X2)         \
++#define CHECK_COPY_REFERENCE(X1)        \
+     if (DYN_TYPE(X1) == REFERENCE2)     \
+         DYN_TYPE(X1) = REFERENCE;       \
+     if(DYN_TYPE(X1) == REFERENCE)       \
+         dyn_copy(X1->data.ref, X1);     \
++
++#define CHECK_NOCOPY_REFERENCE(X2)      \
+     if(DYN_IS_REFERENCE(X2))            \
+         X2=X2->data.ref;                \
+ 
+ 
++#define CHECK_REFERENCE(X1, X2)         \
++    CHECK_COPY_REFERENCE(X1)            \
++    CHECK_NOCOPY_REFERENCE(X2)
++
+ 
+ ss_ushort search (dyn_c *container, dyn_c *element)
+ {
+@@ -43,11 +49,7 @@ ss_ushort search (dyn_c *container, dyn_c *element)
+ 
+ ss_char dyn_op_neg (dyn_c* dyn)
+ {
+-    if (DYN_TYPE(dyn) == REFERENCE2)
+-        DYN_TYPE(dyn) = REFERENCE;
+-
+-    if(DYN_TYPE(dyn) == REFERENCE)
+-        dyn_copy(dyn->data.ref, dyn);
++    CHECK_COPY_REFERENCE(dyn)
+ 
+     switch (DYN_TYPE(dyn)) {
+         case BOOL:    dyn->data.b = !dyn->data.b;
