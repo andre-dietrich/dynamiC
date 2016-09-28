@@ -51,7 +51,7 @@ ss_char dyn_dict_insert(dyn_c* dyn, ss_str key, dyn_c* value)
 
     i = DYN_DICT_LENGTH(dict);
     dict->key[i] = (ss_str) malloc(ss_strlen(key)+1);
-    if (dict->key[i] != NULL) {
+    if (dict->key[i]) {
         ss_strcpy(dict->key[i], key);
         DYN_DICT_LENGTH(dict)++;
 

@@ -670,11 +670,16 @@ GOTO_FALSE:
 
 ss_char dyn_op_ne (dyn_c* dyn1, dyn_c* dyn2)
 {
+/*
     if (dyn_op_eq(dyn1, dyn2)) {
         dyn_set_bool(dyn1, !dyn1->data.b);
         return DYN_TRUE;
     }
     return DYN_FALSE;
+*/
+    return IF((dyn_op_eq(dyn1, dyn2)),
+              (dyn_set_bool(dyn1, !dyn1->data.b), DYN_TRUE),
+              DYN_FALSE);
 }
 
 
