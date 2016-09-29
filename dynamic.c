@@ -13,8 +13,6 @@ void dyn_free (dyn_c* dyn)
                         break;
         case DICT:      dyn_dict_free(dyn);
                         break;
-        //case PROCEDURE: dyn_proc_free(dyn);
-        //                break;
         case FUNCTION:  dyn_fct_free(dyn);
     }
     dyn->type=NONE;
@@ -28,7 +26,6 @@ ss_char dyn_type (dyn_c* dyn)
 void dyn_set_none (dyn_c* dyn)
 {
     dyn_free(dyn);
-    dyn->type=NONE;
     dyn->data.i = 0;
 }
 
@@ -226,10 +223,8 @@ START:
         case STRING:    ss_strcat(string, dyn->data.str);
                         break;
         case EXTERN:    ss_strcat(string, (ss_str)"ex");
-                        //sprintf(&string[strlen(string)], "ex(%p)", dyn->data.ex);
+                        //ss_itoa(&string[ss_strlen(string)], *((ss_int*) dyn->data.ex));
                         break;
-        //case PROCEDURE: ss_strcat(string, "PROC");
-        //                break;
         case FUNCTION:  ss_strcat(string, (ss_str)"FCT");
                         break;
         case LIST:      dyn_list_string_add(dyn, string);
@@ -259,18 +254,18 @@ START:
 
     switch (DYN_TYPE(dyn)) {
         case MISCELLANEOUS:
-        case BOOL:      len = 1;                             break;
-        case INTEGER:   len = ss_itoa_len(dyn->data.i);      break;
-        case FLOAT:     len = ss_ftoa_len(dyn->data.f);      break;
-        case EXTERN:    len = 2;                             break;
-        case FUNCTION:  len = 3;                             break;
-        //case PROCEDURE: len = 4;                             break;
-        case STRING:    len = ss_strlen(dyn->data.str);      break;
+        case BOOL:      len = 1;                        break;
+        case INTEGER:   len = ss_itoa_len(dyn->data.i); break;
+        case FLOAT:     len = ss_ftoa_len(dyn->data.f); break;
+        case EXTERN:    len = 2; // + ss_itoa_len(*((ss_int*) dyn->data.ex));
+                        break;
+        case FUNCTION:  len = 3;                        break;
+        case STRING:    len = ss_strlen(dyn->data.str); break;
 #ifdef S2_SET
         case SET:
 #endif
-        case LIST:      len = dyn_list_string_len(dyn);      break;
-        case DICT:      len = dyn_dict_string_len(dyn);     break;
+        case LIST:      len = dyn_list_string_len(dyn); break;
+        case DICT:      len = dyn_dict_string_len(dyn); break;
         case REFERENCE2:
         case REFERENCE: dyn=dyn->data.ref;
                         goto START;

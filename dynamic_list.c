@@ -42,7 +42,6 @@ ss_char dyn_list_free (dyn_c* list)
     free(list->data.list->container);
     free(list->data.list);
 
-
     return 1;
 }
 
@@ -71,7 +70,7 @@ ss_char dyn_list_resize (dyn_c* list, ss_ushort size)
 ss_char dyn_list_push (dyn_c* list, dyn_c* element)
 {
     if (DYN_LIST_LEN(list) == LST_SPACE(list))
-        if (!dyn_list_resize(list, list->data.list->space + 10))
+        if (!dyn_list_resize(list, list->data.list->space + LIST_DEFAULT))
             return 0;
 
     dyn_copy(element, &list->data.list->container[ list->data.list->length++ ]);
@@ -100,7 +99,7 @@ ss_char dyn_list_insert (dyn_c* list, dyn_c* element, ss_ushort i)
         DYN_INIT(&none);
         dyn_list_push(list, &none);
         ss_ushort n = DYN_LIST_LEN(list);
-        for(;n>i;--n) {
+        while(--n > i) {
             dyn_move(DYN_LIST_GET_REF(list, n-1), DYN_LIST_GET_REF(list, n));
         }
         dyn_move(element, DYN_LIST_GET_REF(list, i));
@@ -114,8 +113,8 @@ ss_char dyn_list_pop(dyn_c* list, dyn_c* element)
     dyn_move(DYN_LIST_GET_END(list), element);
     list->data.list->length--;
 
-    if (LST_SPACE(list) - DYN_LIST_LEN(list) > 10)
-        if (!dyn_list_resize(list, list->data.list->space - 10))
+    if (LST_SPACE(list) - DYN_LIST_LEN(list) > LIST_DEFAULT)
+        if (!dyn_list_resize(list, list->data.list->space - LIST_DEFAULT))
             return 0;
 
     return 1;

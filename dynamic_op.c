@@ -2,8 +2,6 @@
 
 #define max_type(A, B) (DYN_TYPE(A) > DYN_TYPE(B)) ? DYN_TYPE(A) : DYN_TYPE(B)
 
-#define USEOPCMP
-
 #define CHECK_COPY_REFERENCE(X1)        \
     if (DYN_TYPE(X1) == REFERENCE2)     \
         DYN_TYPE(X1) = REFERENCE;       \
@@ -54,15 +52,17 @@ ss_char dyn_op_neg (dyn_c* dyn)
 
     switch (DYN_TYPE(dyn)) {
         case BOOL:    dyn->data.b = !dyn->data.b;
-                      return DYN_TRUE;
+                      goto LABEL_OK;
         case INTEGER: dyn->data.i = -dyn->data.i;
-                      return DYN_TRUE;
+                      goto LABEL_OK;
         case FLOAT:   dyn->data.f = -dyn->data.f;
-                      return DYN_TRUE;
+                      goto LABEL_OK;
     }
 
     dyn_free(dyn);
     return DYN_FALSE;
+LABEL_OK:
+    return DYN_TRUE;
 }
 
 
@@ -77,9 +77,9 @@ ss_char dyn_op_add (dyn_c* dyn1, dyn_c* dyn2)
         switch (max_type(dyn1, dyn2)) {
             case BOOL:
             case INTEGER: dyn_set_int(dyn1, dyn_get_int(dyn1) + dyn_get_int(dyn2));
-                          return DYN_TRUE;
+                          goto LABEL_OK;
             case FLOAT:   dyn_set_float(dyn1, dyn_get_float(dyn1) + dyn_get_float(dyn2));
-                          return DYN_TRUE;
+                          goto LABEL_OK;
             case STRING:  {
                 if (DYN_TYPE(dyn1) == STRING) {
                     dyn1->data.str = (ss_str) realloc(dyn1->data.str, ss_strlen(dyn1->data.str) +
@@ -94,22 +94,17 @@ ss_char dyn_op_add (dyn_c* dyn1, dyn_c* dyn2)
                     dyn_string_add(dyn2, tmp.data.str);
                     dyn_move(&tmp, dyn1);
                 }
-                return DYN_TRUE;
+                goto LABEL_OK;
             }
             case LIST: {
                 if (DYN_TYPE(dyn1) == LIST) {
-                    //ss_ushort i;
-                    //for (i=0; i<DYN_LIST_LEN(dyn2); ++i)
-                    //    dyn_list_push(dyn1, DYN_LIST_GET_REF(dyn2, i));
                     dyn_list_push(dyn1, dyn2);
-                //} else if (DYN_TYPE(dyn1) == LIST) {
-                //    dyn_list_push(dyn1, dyn2);
                 } else {
                     dyn_move(dyn1, &tmp);
                     dyn_copy(dyn2, dyn1);
                     dyn_list_insert(dyn1, &tmp, 0);
                 }
-                return DYN_TRUE;
+                goto LABEL_OK;
 
             }
             case SET: {
@@ -124,7 +119,7 @@ ss_char dyn_op_add (dyn_c* dyn1, dyn_c* dyn2)
                     dyn_copy(dyn2, dyn1);
                     dyn_set_insert(dyn1, &tmp);
                 }
-                return DYN_TRUE;
+                goto LABEL_OK;
             }
             case DICT: {
                 if (DYN_TYPE(dyn1) == DYN_TYPE(dyn2)) {
@@ -133,6 +128,7 @@ ss_char dyn_op_add (dyn_c* dyn1, dyn_c* dyn2)
                         dyn_dict_insert(dyn1,
                                         DYN_DICT_GET_I_KEY(dyn2, i),
                                         DYN_DICT_GET_I_REF(dyn2, i));
+                    goto LABEL_OK;
                     //dyn1->data.dict->meta |= dyn2->data.dict->meta;
                 }
             }
@@ -141,6 +137,8 @@ ss_char dyn_op_add (dyn_c* dyn1, dyn_c* dyn2)
 
     dyn_free(dyn1);
     return DYN_FALSE;
+LABEL_OK:
+    return DYN_TRUE;
 }
 
 ss_char dyn_op_sub (dyn_c* dyn1, dyn_c* dyn2)
@@ -151,9 +149,9 @@ ss_char dyn_op_sub (dyn_c* dyn1, dyn_c* dyn2)
         switch (max_type(dyn1, dyn2)) {
             case BOOL:
             case INTEGER: dyn_set_int(dyn1, dyn_get_int(dyn1) - dyn_get_int(dyn2));
-                          return DYN_TRUE;
+                          goto LABEL_OK;
             case FLOAT:   dyn_set_float(dyn1, dyn_get_float(dyn1) - dyn_get_float(dyn2));
-                          return DYN_TRUE;
+                          goto LABEL_OK;
             case SET: {
                 ss_ushort pos;
                 if (DYN_TYPE(dyn1) == DYN_TYPE(dyn2)) {
@@ -176,13 +174,16 @@ ss_char dyn_op_sub (dyn_c* dyn1, dyn_c* dyn2)
                     if (pos)
                         dyn_list_remove(dyn1, pos-1);
                 }
-                return DYN_TRUE;
+                goto LABEL_OK;
             }
         }
     }
 
     dyn_free(dyn1);
     return DYN_FALSE;
+
+LABEL_OK:
+    return DYN_TRUE;
 }
 
 
@@ -194,9 +195,9 @@ ss_char dyn_op_mul (dyn_c* dyn1, dyn_c* dyn2)
         switch (max_type(dyn1, dyn2)) {
             case BOOL:
             case INTEGER: dyn_set_int(dyn1, dyn_get_int(dyn1) * dyn_get_int(dyn2));
-                          return DYN_TRUE;
+                          goto LABEL_OK;
             case FLOAT:   dyn_set_float(dyn1, dyn_get_float(dyn1) * dyn_get_float(dyn2));
-                          return DYN_TRUE;
+                          goto LABEL_OK;
             case STRING:  {
                 ss_ushort i;
                 if (DYN_TYPE(dyn1) == INTEGER && DYN_TYPE(dyn2) == STRING) {
@@ -223,7 +224,7 @@ ss_char dyn_op_mul (dyn_c* dyn1, dyn_c* dyn2)
                         *c = '\0';
                     }
                 }
-                return DYN_TRUE;
+                goto LABEL_OK;
             }
             case LIST: {
                 ss_ushort i;
@@ -238,7 +239,7 @@ ss_char dyn_op_mul (dyn_c* dyn1, dyn_c* dyn2)
                 ss_ushort len = DYN_LIST_LEN(dyn1);
                 if (!i) {
                     dyn_set_list_len(dyn1, 1);
-                    return DYN_TRUE;
+                    goto LABEL_OK;
                 }
                 if (i > 0) {
                     if (dyn_list_resize(dyn1, DYN_LIST_LEN(dyn1)*i ) ) {
@@ -247,7 +248,7 @@ ss_char dyn_op_mul (dyn_c* dyn1, dyn_c* dyn2)
                             for (n=0; n<len; n++)
                                 dyn_list_push(dyn1, DYN_LIST_GET_REF(dyn1 ,n));
                         }
-                        return DYN_TRUE;
+                        goto LABEL_OK;
                     }
                 }
             }
@@ -256,6 +257,9 @@ ss_char dyn_op_mul (dyn_c* dyn1, dyn_c* dyn2)
 
     dyn_free(dyn1);
     return DYN_FALSE;
+
+LABEL_OK:
+    return DYN_TRUE;
 }
 
 
@@ -267,14 +271,17 @@ ss_char dyn_op_div (dyn_c* dyn1, dyn_c* dyn2)
         switch (max_type(dyn1, dyn2)) {
             case BOOL:
             case INTEGER:   dyn_set_int(dyn1, dyn_get_int(dyn1) / dyn_get_int(dyn2));
-                            return DYN_TRUE;
+                            goto LABEL_OK;
             case FLOAT:     dyn_set_float(dyn1, dyn_get_float(dyn1) / dyn_get_float(dyn2));
-                            return DYN_TRUE;
+                            goto LABEL_OK;
         }
     }
 
     dyn_free(dyn1);
     return DYN_FALSE;
+
+LABEL_OK:
+    return DYN_TRUE;
 }
 
 
@@ -282,13 +289,12 @@ ss_char dyn_op_mod (dyn_c* dyn1, dyn_c* dyn2)
 {
     CHECK_REFERENCE(dyn1, dyn2)
 
-    if ( DYN_TYPE(dyn1) && DYN_TYPE(dyn2) ) {
-        switch (max_type(dyn1, dyn2)) {
-            case BOOL:
-            case FLOAT:
-            case INTEGER: dyn_set_int(dyn1, dyn_get_int(dyn1) % dyn_get_int(dyn2));
-                          return DYN_TRUE;
-        }
+    ss_char t1 = DYN_TYPE(dyn1);
+    ss_char t2 = DYN_TYPE(dyn2);
+
+    if ( (t1 && t2) && t1 <= FLOAT && t2 <= FLOAT ) {
+        dyn_set_int(dyn1, dyn_get_int(dyn1) % dyn_get_int(dyn2));
+        return DYN_TRUE;
     }
 
     dyn_free(dyn1);
@@ -376,17 +382,16 @@ ss_char dyn_get_bool_3 (dyn_c* dyn)
         dyn=dyn->data.ref;
 
     switch (DYN_TYPE(dyn)) {
-        case BOOL:      return dyn->data.b ? DYN_TRUE : DYN_FALSE;
-        case INTEGER:   return dyn->data.i ? DYN_TRUE : DYN_FALSE;
-        case FLOAT:     return dyn->data.f ? DYN_TRUE : DYN_FALSE;
+        case BOOL:
+        case INTEGER:
+        case FLOAT:     return dyn_get_bool(dyn);
 
-        case STRING:    return ss_strlen(dyn->data.str) ? DYN_TRUE : DYN_FALSE;
-
+        case STRING:
 #ifdef S2_SET
         case SET:
 #endif
 #ifdef S2_LIST
-        case LIST:      return DYN_LIST_LEN(dyn) ? DYN_TRUE : DYN_FALSE;
+        case LIST:
 #endif
         case DICT:      return dyn_length(dyn) ? DYN_TRUE : DYN_FALSE;
     }
@@ -430,10 +435,7 @@ ss_char dyn_op_xor (dyn_c* dyn1, dyn_c* dyn2)
     ss_char o2 = dyn_get_bool_3(dyn2);
 
     if (o1 != DYN_NONE && o2 != DYN_NONE)
-        if (o1 == o2)
-            dyn_set_bool(dyn1, DYN_FALSE);
-        else
-            dyn_set_bool(dyn1, DYN_TRUE);
+        dyn_set_bool(dyn1, o1 != o2);
     else
         dyn_free(dyn1);
 
@@ -442,14 +444,8 @@ ss_char dyn_op_xor (dyn_c* dyn1, dyn_c* dyn2)
 
 ss_char dyn_op_not (dyn_c* dyn)
 {
-    ss_char o = dyn_get_bool_3(dyn);
-
-    if (o == DYN_TRUE)
-        dyn_set_bool(dyn, DYN_FALSE);
-    else if (o == DYN_FALSE)
-        dyn_set_bool(dyn, DYN_TRUE);
-    else
-        dyn_free(dyn);
+    if (DYN_NOT_NONE(dyn))
+        dyn_set_bool(dyn, !dyn_get_bool_3(dyn));
 
     return DYN_TRUE;
 }
@@ -590,291 +586,68 @@ GOTO_NEQ:
     goto GOTO_RET;
 
 GOTO_RET:
-    dyn_set_int(dyn1, ret);
-    return DYN_TRUE;
+    //dyn_set_int(dyn1, ret);
+    return ret;
 
 }
 
 ss_char dyn_op_eq (dyn_c* dyn1, dyn_c* dyn2)
 {
-#ifdef USEOPCMP
-    dyn_op_cmp (dyn1, dyn2);
-    if (dyn_get_int(dyn1) == 0 ) dyn_set_bool(dyn1, DYN_TRUE);
-    else  dyn_set_bool(dyn1, DYN_FALSE);
+    dyn_set_bool(dyn1, dyn_op_cmp(dyn1, dyn2)
+                       ? DYN_FALSE
+                       : DYN_TRUE);
     return DYN_TRUE;
-#else
-    dyn_c *tmp = DYN_IS_REFERENCE(dyn1) ? dyn1->data.ref : dyn1;
-
-    if(DYN_IS_REFERENCE(dyn2))
-        dyn2=dyn2->data.ref;
-
-    if (DYN_IS_NONE(tmp) && DYN_IS_NONE(dyn2)) {
-GOTO_TRUE:
-        dyn_set_bool(dyn1, DYN_TRUE);
-        return DYN_TRUE;
-    }
-
-    if((DYN_IS_NONE(tmp) && DYN_NOT_NONE(dyn2)) ||
-       (DYN_NOT_NONE(tmp) && DYN_IS_NONE(dyn2))) {
-GOTO_FALSE:
-        dyn_set_bool(dyn1, DYN_FALSE);
-        return DYN_TRUE;
-    }
-
-    switch (max_type(tmp, dyn2)) {
-        case BOOL:      if (dyn_get_bool(tmp) == dyn_get_bool(dyn2))
-                            goto GOTO_TRUE;
-                        goto GOTO_FALSE;
-        case INTEGER:   if (dyn_get_int(tmp) == dyn_get_int(dyn2))
-                            goto GOTO_TRUE;
-                        goto GOTO_FALSE;
-        case FLOAT:     if (dyn_get_float(tmp) == dyn_get_float(dyn2))
-                            goto GOTO_TRUE;
-                        goto GOTO_FALSE;
-        case STRING: {
-            if (DYN_TYPE(tmp) != DYN_TYPE(dyn2))
-                break;
-            if (ss_strcmp(tmp->data.str, dyn2->data.str) == 0)
-                goto GOTO_TRUE;
-            goto GOTO_FALSE;
-        }
-        case SET:
-        case LIST: {
-            if (DYN_TYPE(tmp) != DYN_TYPE(dyn2))
-                break;
-            if (DYN_LIST_LEN(tmp) == DYN_LIST_LEN(dyn2)) {
-                dyn_c tmp2;
-                DYN_INIT(&tmp2);
-
-                ss_ushort i;
-                for (i=0; i<DYN_LIST_LEN(tmp); ++i) {
-                    dyn_set_ref(&tmp2, DYN_LIST_GET_REF(tmp, i));
-                    if (DYN_TYPE(tmp) == LIST)
-                        dyn_op_eq(&tmp2, DYN_LIST_GET_REF(dyn2, i));
-                    else
-                        dyn_op_in(&tmp2, dyn2);
-
-                    if (!dyn_get_bool(&tmp2))
-                        goto GOTO_FALSE;
-                }
-                goto GOTO_TRUE;
-            }
-            goto GOTO_FALSE;
-        }
-    }
-
-    goto GOTO_FALSE;
-#endif
 }
 
 
 ss_char dyn_op_ne (dyn_c* dyn1, dyn_c* dyn2)
 {
-/*
-    if (dyn_op_eq(dyn1, dyn2)) {
-        dyn_set_bool(dyn1, !dyn1->data.b);
-        return DYN_TRUE;
-    }
-    return DYN_FALSE;
-*/
-    return IF((dyn_op_eq(dyn1, dyn2)),
-              (dyn_set_bool(dyn1, !dyn1->data.b), DYN_TRUE),
-              DYN_FALSE);
+    dyn_set_bool(dyn1, dyn_op_cmp(dyn1, dyn2)
+                       ? DYN_TRUE
+                       : DYN_FALSE);
+    return DYN_TRUE;
 }
 
 
 char dyn_op_lt (dyn_c* dyn1, dyn_c* dyn2)
 {
-#ifdef USEOPCMP
-    dyn_op_cmp (dyn1, dyn2);
-    if (dyn_get_int(dyn1) == 4 ){
+    ss_char rslt = dyn_op_cmp (dyn1, dyn2);
+    if (rslt == 4)
         dyn_free(dyn1);
-        return DYN_FALSE;
-    }
-    if (dyn_get_int(dyn1) == 1 ) dyn_set_bool(dyn1, DYN_TRUE);
-    else dyn_set_bool(dyn1, DYN_FALSE);
+    else
+        dyn_set_bool(dyn1, (rslt == 1)
+                           ? DYN_TRUE
+                           : DYN_FALSE);
     return DYN_TRUE;
-#else
-    dyn_c *tmp = DYN_IS_REFERENCE(dyn1) ? dyn1->data.ref : dyn1;
-
-    if(DYN_IS_REFERENCE(dyn2))
-        dyn2=dyn2->data.ref;
-
-    if (DYN_IS_NONE(tmp) && !DYN_IS_NONE(dyn2)) {
-GOTO_TRUE:
-        dyn_set_bool(dyn1, DYN_TRUE);
-        return DYN_TRUE;
-    }
-    if (!DYN_IS_NONE(tmp) && DYN_IS_NONE(dyn2)) {
-GOTO_FALSE:
-        dyn_set_bool(dyn1, DYN_FALSE);
-        return DYN_TRUE;
-    }
-
-    switch (max_type(tmp, dyn2)) {
-        case NONE:    goto GOTO_FALSE;
-        case BOOL:    if (dyn_get_bool(tmp) < dyn_get_bool(dyn2))
-                          goto GOTO_TRUE;
-                      goto GOTO_FALSE;
-        case INTEGER: if (dyn_get_int(tmp) < dyn_get_int(dyn2))
-                          goto GOTO_TRUE;
-                      goto GOTO_FALSE;
-        case FLOAT:   if (dyn_get_float(tmp) < dyn_get_float(dyn2))
-                          goto GOTO_TRUE;
-                      goto GOTO_FALSE;
-        case STRING: {
-            if (DYN_TYPE(tmp) != DYN_TYPE(dyn2))
-                break;
-            if (ss_strcmp(tmp->data.str, dyn2->data.str) < 0)
-                goto GOTO_TRUE;
-            goto GOTO_FALSE;
-        }
-        case SET:
-        case LIST: {
-            if (DYN_TYPE(tmp) != DYN_TYPE(dyn2))
-                break;
-            if ((DYN_TYPE(tmp) == LIST && DYN_LIST_LEN(tmp) == DYN_LIST_LEN(dyn2)) ||
-                (DYN_TYPE(tmp) == SET && DYN_LIST_LEN(tmp) <= DYN_LIST_LEN(dyn2))) {
-
-                dyn_c tmp2;
-                DYN_INIT(&tmp2);
-
-                ss_ushort i;
-                for (i=0; i<DYN_LIST_LEN(tmp); ++i) {
-                    dyn_set_ref(&tmp2, DYN_LIST_GET_REF(tmp, i));
-
-                    if (DYN_TYPE(tmp) == LIST)
-                        dyn_op_lt(&tmp2, dyn2++);
-                    else
-                        dyn_op_in(&tmp2, dyn2);
-
-                    if (!dyn_get_bool(&tmp2))
-                        goto GOTO_FALSE;
-                }
-                goto GOTO_TRUE;
-            }
-
-            if (DYN_LIST_LEN(tmp) < DYN_LIST_LEN(dyn2))
-                goto GOTO_TRUE;
-            goto GOTO_FALSE;
-        }
-    }
-
-    dyn_free(dyn1);
-    return DYN_FALSE;
-#endif
 }
 
 ss_char dyn_op_ge (dyn_c* dyn1, dyn_c* dyn2)
 {
-    if (dyn_op_lt(dyn1, dyn2)) {
-        dyn_set_bool(dyn1, !dyn1->data.b);
-        return DYN_TRUE;
-    }
+    dyn_op_lt(dyn1, dyn2);
+    dyn_op_not(dyn1);
 
-    return DYN_FALSE;
+    return DYN_TRUE;
 }
 
 ss_char dyn_op_gt (dyn_c* dyn1, dyn_c* dyn2)
 {
-#ifdef USEOPCMP
-    dyn_op_cmp (dyn1, dyn2);
-    if (dyn_get_int(dyn1) == 4 ){
+    ss_char rslt = dyn_op_cmp (dyn1, dyn2);
+    if (rslt == 4)
         dyn_free(dyn1);
-        return DYN_FALSE;
-    }
-    if (dyn_get_int(dyn1) == 2 ) dyn_set_bool(dyn1, DYN_TRUE);
-    else dyn_set_bool(dyn1, DYN_FALSE);
+    else
+        dyn_set_bool(dyn1, (rslt == 2)
+                           ? DYN_TRUE
+                           : DYN_FALSE );
     return DYN_TRUE;
-#else
-    dyn_c *tmp = DYN_IS_REFERENCE(dyn1) ? dyn1->data.ref : dyn1;
-
-    if(DYN_IS_REFERENCE(dyn2))
-        dyn2=dyn2->data.ref;
-
-    if (!DYN_IS_NONE(tmp) &&  DYN_IS_NONE(dyn2)) {
-GOTO_TRUE:
-        dyn_set_bool(dyn1, DYN_TRUE);
-        return DYN_TRUE;
-    }
-    if (DYN_IS_NONE(tmp) &&  DYN_IS_NONE(dyn2)) {
-GOTO_FALSE:
-        dyn_set_bool(dyn1, DYN_FALSE);
-        return DYN_TRUE;
-    }
-    if (DYN_IS_NONE(tmp) && !DYN_IS_NONE(dyn2)) {
-        goto GOTO_FALSE;
-    }
-
-    dyn_c tmp2;
-    DYN_INIT(&tmp2);
-    ss_ushort i;
-
-    switch (max_type(tmp, dyn2)) {
-        case BOOL:    if (dyn_get_bool(tmp) > dyn_get_bool(dyn2))
-                          goto GOTO_TRUE;
-                      goto GOTO_FALSE;
-        case INTEGER: if (dyn_get_int(tmp) > dyn_get_int(dyn2))
-                          goto GOTO_TRUE;
-                      goto GOTO_FALSE;
-        case FLOAT:   if (dyn_get_float(tmp) > dyn_get_float(dyn2))
-                          goto GOTO_TRUE;
-                      goto GOTO_FALSE;
-        case STRING:  {
-            if (DYN_TYPE(tmp) != DYN_TYPE(dyn2))
-                break;
-            if (ss_strcmp(tmp->data.str, dyn2->data.str) > 0)
-                goto GOTO_TRUE;
-            goto GOTO_FALSE;
-        }
-        case LIST: {
-            if (DYN_TYPE(tmp) != DYN_TYPE(dyn2))
-                break;
-            if (DYN_LIST_LEN(tmp) == DYN_LIST_LEN(dyn2)) {
-                for (i=0; i<DYN_LIST_LEN(dyn1); ++i) {
-                    dyn_set_ref(&tmp2, DYN_LIST_GET_REF(tmp, i));
-                    dyn_op_gt(&tmp2, dyn2++);
-
-                    if (!dyn_get_bool(&tmp2))
-                        goto GOTO_FALSE;
-                }
-                goto GOTO_TRUE;
-            }
-            if (DYN_LIST_LEN(tmp) > DYN_LIST_LEN(dyn2))
-                goto GOTO_TRUE;
-            goto GOTO_FALSE;
-        }
-        case SET: {
-            if (DYN_TYPE(tmp) != DYN_TYPE(dyn2))
-                break;
-            if (DYN_LIST_LEN(tmp) >= DYN_LIST_LEN(dyn2)) {
-                for (i=0; i<DYN_LIST_LEN(dyn2); ++i) {
-                    dyn_set_ref(&tmp2, DYN_LIST_GET_REF(dyn2, i));
-                    dyn_op_in(&tmp2, tmp);
-
-                    if (!dyn_get_bool(&tmp2))
-                        goto GOTO_FALSE;
-                }
-                goto GOTO_TRUE;
-            }
-            goto GOTO_FALSE;
-        }
-    }
-
-    dyn_free(dyn1);
-    return DYN_FALSE;
-#endif
 }
 
 
 ss_char dyn_op_le (dyn_c* dyn1, dyn_c* dyn2)
 {
-    if (dyn_op_gt(dyn1, dyn2)) {
-        dyn_set_bool(dyn1, !dyn1->data.b);
-        return DYN_TRUE;
-    }
+    dyn_op_gt(dyn1, dyn2);
+    dyn_op_not(dyn1);
 
-    return DYN_FALSE;
+    return DYN_TRUE;
 }
 
 
@@ -947,7 +720,7 @@ char dyn_op_b_xor(dyn_c *dyn1, dyn_c *dyn2)
     CHECK_REFERENCE(dyn1, dyn2)
 
     if (DYN_TYPE(dyn1)==INTEGER && DYN_TYPE(dyn2)==INTEGER) {
-        dyn1->data.i = dyn1->data.i ^ dyn2->data.i;
+        dyn1->data.i ^= dyn2->data.i;
         return DYN_TRUE;
     }
 
@@ -961,7 +734,7 @@ char dyn_op_b_shift_l(dyn_c *dyn1, dyn_c *dyn2)
     CHECK_REFERENCE(dyn1, dyn2)
 
     if (DYN_TYPE(dyn1)==INTEGER && DYN_TYPE(dyn2)==INTEGER) {
-        dyn1->data.i = dyn1->data.i << dyn2->data.i;
+        dyn1->data.i <<= dyn2->data.i;
         return DYN_TRUE;
     }
 
@@ -974,7 +747,7 @@ char dyn_op_b_shift_r(dyn_c *dyn1, dyn_c *dyn2)
     CHECK_REFERENCE(dyn1, dyn2)
 
     if (DYN_TYPE(dyn1)==INTEGER && DYN_TYPE(dyn2)==INTEGER) {
-        dyn1->data.i = dyn1->data.i >> dyn2->data.i;
+        dyn1->data.i >>= dyn2->data.i;
         return DYN_TRUE;
     }
 

@@ -123,7 +123,7 @@ void      dyn_set_extern      (dyn_c* dyn, void*    v);
 ss_char   dyn_set_string      (dyn_c* dyn, char const * v);
 void      dyn_set_ref         (dyn_c* ref, dyn_c* orig);
 /*---------------------------------------------------------------------------*/
-#define   DYN_SET_LIST(X)     dyn_set_list_len(X, 10)
+#define   DYN_SET_LIST(X)     dyn_set_list_len(X, LIST_DEFAULT)
 #define   DYN_LIST_LEN(X)     (X)->data.list->length
 ss_char   dyn_set_list_len    (dyn_c* list, ss_ushort len);
 ss_char   dyn_list_push       (dyn_c* list, dyn_c* element);
@@ -150,6 +150,7 @@ dyn_c*    dyn_dict_get        (dyn_c* dyn, ss_str key);
 ss_char   dyn_dict_set_loc    (dyn_c* dyn);
 /*---------------------------------------------------------------------------*/
 #define   DYN_DICT_LEN(X)         X->data.dict->value.data.list->length   //DYN_LIST_LEN((X)->data.dict->value)
+//#define   DYN_DICT_LEN(X)         dyn_length(X)   //DYN_LIST_LEN((X)->data.dict->value)
 //#define   DYN_DICT_GET_I_REF(X,i) dyn_list_get_ref(&(X)->data.dict->value, i)
 #define   DYN_DICT_GET_I_REF(X,i)  &(X)->data.dict->value.data.list->container[i]
 #define   DYN_DICT_GET_I_KEY(X,i)  (X)->data.dict->key[i]
