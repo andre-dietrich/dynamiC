@@ -17,6 +17,8 @@
 #ifndef DYN_C_H
 #define DYN_C_H
 
+#define S2_SET
+
 #include "ss_string.h"
 #include <stdlib.h>
 
