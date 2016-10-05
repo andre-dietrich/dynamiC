@@ -129,6 +129,7 @@ void      dyn_set_ref         (dyn_c* ref, dyn_c* orig);
 #define   DYN_LIST_LEN(X)     (X)->data.list->length
 ss_char   dyn_set_list_len    (dyn_c* list, ss_ushort len);
 ss_char   dyn_list_push       (dyn_c* list, dyn_c* element);
+ss_char   dyn_list_push_none  (dyn_c* list);
 ss_char   dyn_list_pop        (dyn_c* list, dyn_c* element);
 ss_char   dyn_list_get        (dyn_c* list, dyn_c* element, ss_short i);
 #define   DYN_LIST_GET_REF(X,i)     &(X)->data.list->container[i]

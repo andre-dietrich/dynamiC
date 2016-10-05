@@ -80,6 +80,12 @@ ss_char dyn_list_push (dyn_c* list, dyn_c* element)
     return 1;
 }
 
+ss_char dyn_list_push_none (dyn_c* list)
+{
+    dyn_c none;
+    DYN_INIT(&none);
+    return dyn_list_push(list, &none);
+}
 
 ss_char dyn_list_remove (dyn_c* list, ss_ushort i)
 {
