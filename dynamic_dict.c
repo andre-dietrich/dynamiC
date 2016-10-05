@@ -40,10 +40,11 @@ ss_char dyn_dict_insert(dyn_c* dyn, ss_str key, dyn_c* value)
 
     if (DYN_DICT_LENGTH(dict) == space) {
         space += DICT_DEFAULT;
+
         if (dyn_list_resize(&dyn->data.dict->value, space)) {
             dyn->data.dict->key = (ss_str*) realloc(dyn->data.dict->key, space * sizeof(ss_str*));
             if (dyn->data.dict->key) {
-                for (i=space-DICT_DEFAULT; i<space; ++i)
+                for (i=space - DICT_DEFAULT; i<space; ++i)
                     dyn->data.dict->key[i] = NULL;
             }
         }

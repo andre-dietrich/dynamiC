@@ -48,13 +48,15 @@ ss_char dyn_list_free (dyn_c* list)
 
 ss_char dyn_list_resize (dyn_c* list, ss_ushort size)
 {
+    ss_ushort i;
+//    ss_ushort len = dyn_length(list);
+
     dyn_c* new_list = (dyn_c*) realloc(list->data.list->container, size * sizeof(dyn_c));
 
     if (new_list) {
         list->data.list->container = new_list;
 
         if (list->data.list->space < size) {
-            ss_ushort i;
             for(i=DYN_LIST_LEN(list); i<size; ++i)
                 DYN_INIT(&list->data.list->container[i]);
         }
