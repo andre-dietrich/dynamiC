@@ -307,6 +307,7 @@ void dyn_move (dyn_c* from, dyn_c* to)
         dyn_dict_set_loc(to);
 
     DYN_INIT(from);
+    //dyn_set_ref(from, to);
 }
 
 

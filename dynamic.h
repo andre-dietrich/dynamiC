@@ -128,8 +128,8 @@ void      dyn_set_ref         (dyn_c* ref, dyn_c* orig);
 #define   DYN_SET_LIST(X)     dyn_set_list_len(X, LIST_DEFAULT)
 #define   DYN_LIST_LEN(X)     (X)->data.list->length
 ss_char   dyn_set_list_len    (dyn_c* list, ss_ushort len);
-ss_char   dyn_list_push       (dyn_c* list, dyn_c* element);
-ss_char   dyn_list_push_none  (dyn_c* list);
+dyn_c*    dyn_list_push       (dyn_c* list, dyn_c* element);
+dyn_c*    dyn_list_push_none  (dyn_c* list);
 ss_char   dyn_list_pop        (dyn_c* list, dyn_c* element);
 ss_char   dyn_list_get        (dyn_c* list, dyn_c* element, ss_short i);
 #define   DYN_LIST_GET_REF(X,i)     &(X)->data.list->container[i]
@@ -147,7 +147,7 @@ void      dyn_list_string_add (dyn_c* dyn, ss_str string);
 /*---------------------------------------------------------------------------*/
 ss_char   dyn_set_dict        (dyn_c* dyn, ss_ushort length);
 ss_char   dyn_dict_change     (dyn_c* dyn, ss_ushort i, dyn_c *value);
-ss_char   dyn_dict_insert     (dyn_c* dyn, ss_str key,  dyn_c *value);
+dyn_c*    dyn_dict_insert     (dyn_c* dyn, ss_str key,  dyn_c *value);
 ss_char   dyn_dict_remove     (dyn_c* dyn, ss_str key);
 dyn_c*    dyn_dict_get        (dyn_c* dyn, ss_str key);
 ss_char   dyn_dict_set_loc    (dyn_c* dyn);

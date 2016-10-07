@@ -28,7 +28,7 @@ ss_char dyn_set_dict (dyn_c* dyn, ss_ushort length)
     return 0;
 }
 
-ss_char dyn_dict_insert(dyn_c* dyn, ss_str key, dyn_c* value)
+dyn_c* dyn_dict_insert(dyn_c* dyn, ss_str key, dyn_c* value)
 {
     dyn_dict* dict = dyn->data.dict;
 
@@ -57,10 +57,11 @@ ss_char dyn_dict_insert(dyn_c* dyn, ss_str key, dyn_c* value)
         DYN_DICT_LENGTH(dict)++;
 
 GOTO__CHANGE:
-        return dyn_dict_change(dyn, i, value);
+        dyn_dict_change(dyn, i, value);
+        return dyn_dict_get_i_ref(dyn, i);
     }
 
-    return 0;
+    return NULL;
 }
 
 
@@ -68,7 +69,6 @@ ss_char dyn_dict_change (dyn_c* dyn, ss_ushort i, dyn_c* value)
 {
     return dyn_copy(value, DYN_LIST_GET_REF(&dyn->data.dict->value, i));
 }
-
 
 ss_ushort dyn_dict_has_key (dyn_c* dyn, ss_str key)
 {
@@ -153,7 +153,7 @@ dyn_c* dyn_dict_get (dyn_c* dyn, ss_str key)
     ss_ushort pos = dyn_dict_has_key(dyn, key);
 
     if (pos)
-        return DYN_DICT_GET_I_REF(dyn, pos-1);
+        return DYN_DICT_GET_I_REF(dyn, --pos);
 
     return NULL;
 }
