@@ -24,7 +24,6 @@
 
 #include "dynamic_types.h"
 #include "dynamic_defines.h"
-#include "functional_c.h"
 
 /**
  * @brief Used data types within the SelectScript.

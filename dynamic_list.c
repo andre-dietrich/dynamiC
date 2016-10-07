@@ -82,16 +82,16 @@ dyn_c* dyn_list_push (dyn_c* list, dyn_c* element)
 
 dyn_c* dyn_list_push_none (dyn_c* list)
 {
-/*    if (DYN_LIST_LEN(list) == LST_SPACE(list))
+    if (DYN_LIST_LEN(list) == LST_SPACE(list))
         if (!dyn_list_resize(list, list->data.list->space + LIST_DEFAULT))
             return NULL;
 
-    list->data.list->length++;
-    return &list->data.list->container[ list->data.list->length-1 ];
-*/
-    dyn_c none;
+    return &list->data.list->container[ list->data.list->length++ ];
+
+/*    dyn_c none;
     DYN_INIT(&none);
     return dyn_list_push(list, &none);
+*/
 }
 
 ss_char dyn_list_remove (dyn_c* list, ss_ushort i)
@@ -109,11 +109,10 @@ ss_char dyn_list_remove (dyn_c* list, ss_ushort i)
 
 ss_char dyn_list_insert (dyn_c* list, dyn_c* element, ss_ushort i)
 {
-    if (DYN_LIST_LEN(list) >= i) {
-        dyn_c none;
-        DYN_INIT(&none);
-        dyn_list_push(list, &none);
-        ss_ushort n = DYN_LIST_LEN(list);
+    ss_ushort n = DYN_LIST_LEN(list);
+    if (n >= i) {
+        dyn_list_push_none(list);
+        ++n;
         while(--n > i) {
             dyn_move(DYN_LIST_GET_REF(list, n-1), DYN_LIST_GET_REF(list, n));
         }
