@@ -87,11 +87,6 @@ dyn_c* dyn_list_push_none (dyn_c* list)
             return NULL;
 
     return &list->data.list->container[ list->data.list->length++ ];
-
-/*    dyn_c none;
-    DYN_INIT(&none);
-    return dyn_list_push(list, &none);
-*/
 }
 
 ss_char dyn_list_remove (dyn_c* list, ss_ushort i)
