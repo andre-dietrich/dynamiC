@@ -445,7 +445,7 @@ ss_char dyn_op_xor (dyn_c* dyn1, dyn_c* dyn2)
 ss_char dyn_op_not (dyn_c* dyn)
 {
     CHECK_COPY_REFERENCE(dyn)
-    
+
     if (DYN_NOT_NONE(dyn))
         dyn_set_bool(dyn, !dyn_get_bool_3(dyn));
 

@@ -124,7 +124,7 @@ ss_uint dyn_size (dyn_c* dyn)
 
         case FUNCTION: {
             bytes += sizeof(dyn_fct);
-            bytes += ss_strlen(dyn->data.fct->info)+1;
+            //bytes += ss_strlen(dyn->data.fct->info)+1;
             break;
         }
     }
@@ -139,7 +139,7 @@ START:
         case BOOL:      return dyn->data.b ? 1 : 0;
         case INTEGER:   return dyn->data.i ? 1 : 0;
         case FLOAT:     return dyn->data.f ? 1 : 0;
-        case STRING:    return ss_strlen(dyn->data.str) ? 1 : 0;
+        case STRING:    return dyn->data.str[0] ? 1 : 0;
 #ifdef S2_SET
         case SET:
 #endif
@@ -285,7 +285,7 @@ ss_char dyn_copy (dyn_c* dyn, dyn_c* copy)
                         break;
 #endif
         case DICT:      return dyn_dict_copy( dyn, copy );
-        case FUNCTION:  return dyn_fct_copy  ( dyn, copy );
+        case FUNCTION:  return dyn_fct_copy ( dyn, copy );
         case REFERENCE: return dyn_copy ( dyn->data.ref, copy );
         default: *copy = *dyn;
     }
@@ -298,8 +298,9 @@ void dyn_move (dyn_c* from, dyn_c* to)
 {
     dyn_free(to);
 
-    if (DYN_TYPE(from) == REFERENCE)
+    if (DYN_TYPE(from) == REFERENCE) {
         dyn_copy(from->data.ref, to);
+    }
     else
         *to = *from;
 

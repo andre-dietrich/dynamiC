@@ -1,64 +1,61 @@
 #include "dynamic.h"
+#include <stdio.h>
 
 
-
-ss_char dyn_set_fct(dyn_c* dyn, void *ptr, ss_byte type, ss_str info)
+ss_char dyn_set_fct(dyn_c* dyn, void *ptr, ss_ushort type, ss_str info)
 {
     dyn_free(dyn);
 
-    dyn->type = FUNCTION;
-
-    //dyn->data.fct = NULL;
     dyn->data.fct = (dyn_fct*) malloc(sizeof(dyn_fct));
 
     if (dyn->data.fct) {
+        dyn->type = FUNCTION;
         dyn->data.fct->ptr  = ptr;
-        dyn->data.fct->type = type;
+        dyn->data.fct->tp   = type;
         dyn->data.fct->info = NULL;
-        if (info!=NULL) {
-            if (ss_strlen(info)) {
+        dyn->data.fct->params = NULL;
+
+        if (info) {
+            if (info[0]) {
                 dyn->data.fct->info = (ss_str) malloc( ss_strlen(info)+1 );
                 if (dyn->data.fct->info) {
                     ss_strcpy( dyn->data.fct->info, info );
                 }
             }
         }
+
         return 1;
     }
-
-    free(dyn->data.fct);
 
     return 0;
 }
 
 
-ss_char dyn_set_fct_ss(dyn_c* dyn, dyn_c* params,
-                     ss_ushort length, ss_char* code,
-                     ss_str info)
+ss_char dyn_set_fct_ss(dyn_c* dyn, ss_char* code, ss_ushort length,
+                                   ss_str   info, dyn_c* params)
 {
-    if( dyn_set_fct(dyn, NULL, 0, info) ) {
-        dyn_proc *proc = (dyn_proc*) malloc(sizeof(dyn_proc));
+    if( dyn_set_fct(dyn, NULL, length, info) ) {
+        char* ptr = (ss_char*) malloc(length);
 
-        if (proc) {
-            proc->length = length;
-            proc->code = (ss_char*) malloc(length);
+        if (ptr) {
+            ss_ushort  i;
+            for (i=0; i<length; ++i)
+                ptr[i] = code[i];
 
-            if (proc->code) {
-                ss_ushort  i;
-                for (i=0; i<length; ++i){
-                    proc->code[i] = code[i];
-                }
-
-                DYN_INIT(&proc->params);
-                if (dyn_copy(params, &proc->params)){
-                    dyn->data.fct->ptr = proc;
+            dyn_c* params2 = (dyn_c*) malloc(sizeof(dyn_c));
+            if (params2) {
+                fprintf(stderr, "SSSSSSSSSSSSSSSSSS (%s)\n", dyn_get_string(params));
+                DYN_INIT(params2);
+                if (dyn_copy(params, params2)) {
+                    dyn->data.fct->ptr    = (void*) ptr;
+                    dyn->data.fct->params = (void*) params2;
                     return 1;
                 }
-                free(proc->code);
+                free(params2);
             }
-            free(proc);
+            free(ptr);
         }
-        dyn->data.fct->type = 1;
+        dyn->data.fct->tp = 0;
         dyn_fct_free(dyn);
     }
 
@@ -68,15 +65,15 @@ ss_char dyn_set_fct_ss(dyn_c* dyn, dyn_c* params,
 
 ss_char dyn_fct_free(dyn_c* dyn)
 {
-    if (!dyn->data.fct->type) {
-        dyn_proc *proc = (dyn_proc*) dyn->data.fct->ptr;
-        dyn_free(&proc->params);
-        free(proc->code);
-        free(proc);
+    if (dyn->data.fct->tp > 1) {
+        dyn_free(dyn->data.fct->params);
+        free(dyn->data.fct->params);
+        free(dyn->data.fct->ptr);
     }
 
-    if (dyn->data.fct->info != NULL)
+    if (dyn->data.fct->info)
         free(dyn->data.fct->info);
+
     free(dyn->data.fct);
 
     return 1;
@@ -84,23 +81,21 @@ ss_char dyn_fct_free(dyn_c* dyn)
 
 ss_char dyn_fct_copy(dyn_c* dyn, dyn_c* copy)
 {
-    if (dyn->data.fct->type)
+    if (dyn->data.fct->tp <= 1)
         return dyn_set_fct( copy,
                             dyn->data.fct->ptr,
-                            dyn->data.fct->type,
+                            dyn->data.fct->tp,
                             dyn->data.fct->info);
 
-    dyn_proc *proc = (dyn_proc*)dyn->data.fct->ptr;
-
-    return dyn_set_fct_ss( copy,
-                           &proc->params,
-                           proc->length,
-                           proc->code,
-                           dyn->data.fct->info);
+    return dyn_set_fct_ss(  copy,
+                            (char*)dyn->data.fct->ptr,
+                            dyn->data.fct->tp,
+                            dyn->data.fct->info,
+                            (dyn_c*) dyn->data.fct->params);
 }
 
 
 ss_char* dyn_fct_get_ss (dyn_c* dyn)
 {
-    return ((dyn_proc*)dyn->data.fct->ptr)->code;
+    return (ss_char*) dyn->data.fct->ptr;
 }

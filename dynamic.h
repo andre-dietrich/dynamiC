@@ -48,11 +48,10 @@ enum TYPE { NONE,       /**< None type without any value.   */
             REFERENCE2,
             MISCELLANEOUS};
 
-typedef struct dynamic dyn_c;
+typedef struct dynamic      dyn_c;
 typedef struct dynamic_list dyn_list;
 typedef struct dynamic_dict dyn_dict;
-typedef struct dynamic_procedure dyn_proc;
-typedef struct dynamic_function dyn_fct;
+typedef struct dynamic_fct  dyn_fct;
 
 
 /**
@@ -87,15 +86,10 @@ struct dynamic_dict {
      dyn_c     value;
 } __attribute__ ((packed));
 
-struct dynamic_procedure {
-     dyn_c     params;
-     ss_ushort length;
-     ss_char*  code;
-} __attribute__ ((packed));
-
-struct dynamic_function {
+struct dynamic_fct {
      void*     ptr;
-     ss_byte   type; // 0 basic fct, 1 sys fct
+     void*     params;
+     ss_ushort tp; // 0 basic fct, 1 sys fct
      ss_str    info;
 } __attribute__ ((packed));
 
@@ -149,7 +143,7 @@ ss_char   dyn_dict_change     (dyn_c* dyn, ss_ushort i, dyn_c *value);
 dyn_c*    dyn_dict_insert     (dyn_c* dyn, ss_str key,  dyn_c *value);
 ss_char   dyn_dict_remove     (dyn_c* dyn, ss_str key);
 dyn_c*    dyn_dict_get        (dyn_c* dyn, ss_str key);
-ss_char   dyn_dict_set_loc    (dyn_c* dyn);
+void      dyn_dict_set_loc    (dyn_c* dyn);
 /*---------------------------------------------------------------------------*/
 #define   DYN_DICT_LEN(X)         X->data.dict->value.data.list->length   //DYN_LIST_LEN((X)->data.dict->value)
 //#define   DYN_DICT_LEN(X)         dyn_length(X)   //DYN_LIST_LEN((X)->data.dict->value)
@@ -180,8 +174,8 @@ void      dyn_dict_string_add(dyn_c* dyn, ss_str string);
 //ss_char*  dyn_proc_get        (dyn_c* dyn);
 
 
-ss_char  dyn_set_fct          (dyn_c* dyn, void *ptr, ss_byte type, ss_str info);
-ss_char  dyn_set_fct_ss       (dyn_c* dyn, dyn_c* params, ss_ushort length, ss_char* code, ss_str info);
+ss_char  dyn_set_fct          (dyn_c* dyn, void *ptr, ss_ushort type, ss_str info);
+ss_char  dyn_set_fct_ss       (dyn_c* dyn, ss_char* code, ss_ushort length, ss_str info, dyn_c* params);
 ss_char* dyn_fct_get_ss       (dyn_c* dyn);
 ss_char  dyn_fct_free         (dyn_c* dyn);
 ss_char  dyn_fct_copy         (dyn_c* dyn, dyn_c* copy);

@@ -1,4 +1,5 @@
 #include "dynamic.h"
+#include <stdio.h>
 
 ss_char dyn_set_dict (dyn_c* dyn, ss_ushort length)
 {
@@ -162,6 +163,7 @@ dyn_c* dyn_dict_get (dyn_c* dyn, ss_str key)
 ss_char dyn_dict_copy (dyn_c* dyn, dyn_c* copy)
 {
     dyn_dict* dict = dyn->data.dict;
+
     ss_ushort length = DYN_DICT_LENGTH(dict);
 
     if (dyn_set_dict(copy, length)) {
@@ -173,8 +175,6 @@ ss_char dyn_dict_copy (dyn_c* dyn, dyn_c* copy)
                 return 0;
             }
         }
-
-        //copy->data.dict->meta = dyn->data.dict->meta;
 
         dyn_dict_set_loc(copy);
     }
@@ -219,25 +219,23 @@ void dyn_dict_string_add (dyn_c* dyn, ss_str string)
         ss_strcat(string, (ss_str)"}");
 }
 
-ss_char fct_set_loc (dyn_c* proc, dyn_c* loc)
+void fct_set_loc (dyn_c* proc, dyn_c* loc)
 {
-    if (!proc->data.fct->type) {
-        dyn_proc *p = (dyn_proc*) proc->data.fct->ptr;
-        if (DYN_NOT_NONE(&p->params)) {
-            ss_byte i = dyn_dict_has_key(&p->params, (ss_str)"");
-            if (i--) {
-                dyn_set_ref( DYN_DICT_GET_I_REF(&p->params, i), loc );
-                DYN_TYPE(DYN_DICT_GET_I_REF(&p->params, i)) = REFERENCE2;
-                return 1;
+    if (proc->data.fct->tp > 1) {
+        dyn_c *p = (dyn_c*) proc->data.fct->params;
+        if (DYN_NOT_NONE(p)) {
+            p = dyn_dict_get(p, (ss_str)"");
+            if (p) {
+                dyn_set_ref(p, loc);
+                DYN_TYPE(p) = REFERENCE2;
+
+                fprintf(stderr, "XXXXXXXXXXXXXXXXXXXXx (%s)\n", dyn_get_string(p));
             }
         }
     }
-
-    return 0;
 }
 
-
-ss_char dyn_dict_set_loc(dyn_c* dyn)
+void dyn_dict_set_loc(dyn_c* dyn)
 {
     dyn_dict* dict = dyn->data.dict;
     ss_ushort length = DYN_DICT_LENGTH(dict);
@@ -247,21 +245,11 @@ ss_char dyn_dict_set_loc(dyn_c* dyn)
     ss_ushort i;
     for (i=0; i<length; ++i) {
         ptr = DYN_DICT_GET_I_REF(dyn, i);
+
         if (DYN_TYPE(ptr) == FUNCTION) {
             fct_set_loc(ptr, dyn);
-            /*if (!ptr->data.fct->type) {
-                ptr = (dyn_proc*) ptr->data.fct->ptr;
-                if (DYN_NOT_NONE(&p->params)) {
-                    ss_byte pos = dyn_dict_has_key(&p->params, "");
-                    if (pos--) {
-                        dyn_set_ref( DYN_DICT_GET_I_REF(&p->params, pos), ptr );
-                        DYN_TYPE(DYN_DICT_GET_I_REF(&p->params, pos)) = REFERENCE2;
-                    }
-                }
-            }*/
         }
         else if (DYN_TYPE(ptr) == DICT)
             dyn_dict_set_loc(ptr);
     }
-    return 1;
 }

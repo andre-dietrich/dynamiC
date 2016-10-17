@@ -2,5 +2,5 @@
 //#define S2_LIST
 //#define S2_SET
 
-#define LIST_DEFAULT 5
-#define DICT_DEFAULT 6
+#define LIST_DEFAULT 100
+#define DICT_DEFAULT 10
