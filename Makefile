@@ -4,7 +4,7 @@ RM	   = rm
 ECHO	 = echo
 
 CFLAGS = -Wall -g #-Os
-OBJLIB = libdynamic.so
+OBJLIB = libdynC.so
 
 SRC = $(wildcard dynamic*.c) ss_string.c
 OBJ = $(patsubst %.c,%.o,$(SRC))
@@ -27,8 +27,9 @@ lib: $(OBJ)
 clean:
 		cd test; make clean
 		$(RM) -f *.out *.o *.so *.a
+		rm -rf docs
 
-doc:
+docs:
 		doxygen
 
 test: lib

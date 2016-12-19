@@ -46,11 +46,21 @@ ss_ushort search (dyn_c *container, dyn_c *element)
     return 0;
 }
 
-ss_char dyn_op_neg (dyn_c* dyn)
+/**
+ * The negation operation is only be applied onto numeric or boolean/trilean
+ * data types. For all other types the result of dyn is set to type NONE.
+ *
+ * @param dyn in- and output dynamic element
+ *
+ * @retval DYN_TRUE   if operation could be applied onto the input data type
+ * @retval DYN_FALSE  otherwise
+ */
+trilean dyn_op_neg (dyn_c* dyn)
 {
     CHECK_COPY_REFERENCE(dyn)
 
     switch (DYN_TYPE(dyn)) {
+        case NONE:    goto LABEL_OK;
         case BOOL:    dyn->data.b = !dyn->data.b;
                       goto LABEL_OK;
         case INTEGER: dyn->data.i = -dyn->data.i;
@@ -61,12 +71,43 @@ ss_char dyn_op_neg (dyn_c* dyn)
 
     dyn_free(dyn);
     return DYN_FALSE;
+
 LABEL_OK:
     return DYN_TRUE;
 }
 
-
-ss_char dyn_op_add (dyn_c* dyn1, dyn_c* dyn2)
+/**
+ * The add operation shows generates different results according to the input
+ * data types. The resulting type is defined by the highest type, see the
+ * following list for allowed operations:
+ *
+ * dyn_1     | dyn_2     | result type
+ * ----------|-----------|------------
+ * BOOL      | BOOL      | BOOL
+ * INTEGER   | BOOL      | INTEGER
+ * BOOL      | INTEGER   | INTEGER
+ * INTEGER   | INTEGER   | INTEGER
+ * FLOAT     | BOOL      | FLOAT
+ * BOOL      | FLOAT     | FLOAT
+ * FLOAT     | INTEGER   | FLOAT
+ * INTEGER   | FLOAT     | FLOAT
+ * FLOAT     | FLOAT     | FLOAT
+ * STRING    | (NUMERIC) | STRING (concatenaited) "abc123"
+ * (NUMERIC) | STRING    | STRING (concatenaited) "123abc"
+ * STRING    | STRING    | STRING (concatenaited) "abcabc"
+ * LIST      | ...       | LIST [, ...]
+ * ...       | LIST      | LIST [... ,]
+ * SET       | ...       | SET  {, ...} (unique elements only)
+ * ...       | SET       | SET  {, ...} (unique elements only)
+ * DICT      | DICT      | DICT {with all elements}
+ *
+ * @param[in, out] dyn1 in- and output parameter
+ * @param[in]      dyn2 input parameter
+ *
+ * @retval DYN_TRUE   if operation could be applied onto the input data type
+ * @retval DYN_FALSE  otherwise
+ */
+trilean dyn_op_add (dyn_c* dyn1, dyn_c* dyn2)
 {
     CHECK_REFERENCE(dyn1, dyn2)
 
@@ -76,6 +117,7 @@ ss_char dyn_op_add (dyn_c* dyn1, dyn_c* dyn2)
     if (DYN_TYPE(dyn1) && DYN_TYPE(dyn2)) {
         switch (max_type(dyn1, dyn2)) {
             case BOOL:
+
             case INTEGER: dyn_set_int(dyn1, dyn_get_int(dyn1) + dyn_get_int(dyn2));
                           goto LABEL_OK;
             case FLOAT:   dyn_set_float(dyn1, dyn_get_float(dyn1) + dyn_get_float(dyn2));
@@ -129,7 +171,6 @@ ss_char dyn_op_add (dyn_c* dyn1, dyn_c* dyn2)
                                         DYN_DICT_GET_I_KEY(dyn2, i),
                                         DYN_DICT_GET_I_REF(dyn2, i));
                     goto LABEL_OK;
-                    //dyn1->data.dict->meta |= dyn2->data.dict->meta;
                 }
             }
         }
@@ -141,7 +182,19 @@ LABEL_OK:
     return DYN_TRUE;
 }
 
-ss_char dyn_op_sub (dyn_c* dyn1, dyn_c* dyn2)
+/**
+ * The subtract operation shows generates different results according to the
+ * input data types. Subtraction is allowed on numeric values and onto sets,
+ * where the second parameter defines the element/set that shoult be subtracted
+ * from the other set.
+ *
+ * @param[in, out] dyn1 in- and output parameter
+ * @param[in]      dyn2 input parameter
+ *
+ * @retval DYN_TRUE   if operation could be applied onto the input data types
+ * @retval DYN_FALSE  otherwise
+ */
+trilean dyn_op_sub (dyn_c* dyn1, dyn_c* dyn2)
 {
     CHECK_REFERENCE(dyn1, dyn2)
 
@@ -186,8 +239,22 @@ LABEL_OK:
     return DYN_TRUE;
 }
 
-
-ss_char dyn_op_mul (dyn_c* dyn1, dyn_c* dyn2)
+/**
+ * Multiplication generates different results according to the input data types.
+ * For NUMERIC and NUMERIC data types the common arithmetic multiplication gets
+ * applied and for the combination of:
+ * (LIST|STRING) * NUMERIC or NUMERIC * (LIST|STRING)
+ * results in a repeated string or repeated list, multiplication with ZERO
+ * generates an empty LIST or STRING, negative values are not allowed.
+ *
+ * @param[in, out] dyn1 in- and output parameter
+ * @param[in]      dyn2 input parameter
+ *
+ * @retval DYN_TRUE   if operation could be applied onto the input data types
+ *                    or values
+ * @retval DYN_FALSE  otherwise
+ */
+trilean dyn_op_mul (dyn_c* dyn1, dyn_c* dyn2)
 {
     CHECK_REFERENCE(dyn1, dyn2)
 
@@ -262,8 +329,17 @@ LABEL_OK:
     return DYN_TRUE;
 }
 
-
-ss_char dyn_op_div (dyn_c* dyn1, dyn_c* dyn2)
+/**
+ * Dividing is only performed onto NUMERIC values, for all other values
+ * DYN_FALSE gets returned.
+ *
+ * @param[in, out] dyn1 in- and output parameter
+ * @param[in]      dyn2 input parameter
+ *
+ * @retval DYN_TRUE   if operation could be applied onto the input data types
+ * @retval DYN_FALSE  otherwise
+ */
+trilean dyn_op_div (dyn_c* dyn1, dyn_c* dyn2)
 {
     CHECK_REFERENCE(dyn1, dyn2)
 
@@ -284,8 +360,18 @@ LABEL_OK:
     return DYN_TRUE;
 }
 
-
-ss_char dyn_op_mod (dyn_c* dyn1, dyn_c* dyn2)
+/**
+ * Modulo can only be performed onto NUMERIC values, if these are of type FLOAT
+ * then they are casted to INTEGER, such that the result is always of type
+ * INTEGER.
+ *
+ * @param[in, out] dyn1 in- and output(INTEGER) parameter
+ * @param[in]      dyn2 input parameter
+ *
+ * @retval DYN_TRUE   if operation could be applied onto the input data types
+ * @retval DYN_FALSE  otherwise
+ */
+trilean dyn_op_mod (dyn_c* dyn1, dyn_c* dyn2)
 {
     CHECK_REFERENCE(dyn1, dyn2)
 
@@ -301,6 +387,19 @@ ss_char dyn_op_mod (dyn_c* dyn1, dyn_c* dyn2)
     return DYN_FALSE;
 }
 
+/**
+ * @brief Power function approximation x^y
+ *
+ * This implementation is based on the fastapprox library of Paul Minero.
+ *
+ * @see https://code.google.com/archive/p/fastapprox/
+ * @see http://www.machinedlearnings.com/2011/06/fast-approximate-logarithm-exponential.html
+ *
+ * @param x base value
+ * @param y exponential value
+ *
+ * @returs approx. float value
+ */
 float fast_approx_pow (float x, float p)
 {
     union { float f;
@@ -326,8 +425,18 @@ float fast_approx_pow (float x, float p)
     return mx.f;
 }
 
-
-ss_char dyn_op_pow (dyn_c* dyn1, dyn_c* dyn2)
+/**
+ * Power function is only applied onto NUMERIC values less than FLOAT, in case
+ * of a FLOAT value the system pow function gets applied or in case of the
+ * usage of an embedded system, fast_approx_pow algorithm is applied.
+ *
+ * @param[in, out] dyn1 base value and result value
+ * @param[in]      dyn2 exponent value
+ *
+ * @retval DYN_TRUE   if operation could be applied onto the input data types
+ * @retval DYN_FALSE  otherwise
+ */
+trilean dyn_op_pow (dyn_c* dyn1, dyn_c* dyn2)
 {
     CHECK_REFERENCE(dyn1, dyn2)
 
@@ -375,31 +484,48 @@ ss_char dyn_op_pow (dyn_c* dyn1, dyn_c* dyn2)
     return DYN_FALSE;
 }
 
-
-ss_char dyn_get_bool_3 (dyn_c* dyn)
+/**
+ * In case of a NONE value or a FUNCTION the unknown truth value DYN_NONE gets
+ * returned otherwise the boolean truth value from dyn_get_bool.
+ *
+ * @param dyn input dynamic element
+ *
+ * @returns trilean truth value
+ */
+trilean dyn_get_bool_3 (dyn_c* dyn)
 {
     if(DYN_IS_REFERENCE(dyn))
         dyn=dyn->data.ref;
 
-    switch (DYN_TYPE(dyn)) {
-        case BOOL:
-        case INTEGER:
-        case FLOAT:     return dyn_get_bool(dyn);
-
-        case STRING:
-#ifdef S2_SET
-        case SET:
-#endif
-#ifdef S2_LIST
-        case LIST:
-#endif
-        case DICT:      return dyn_length(dyn) ? DYN_TRUE : DYN_FALSE;
-    }
-
-    return DYN_NONE;
+    return (DYN_IS_NONE(dyn) || DYN_TYPE(dyn) == FUNCTION) ? DYN_NONE : dyn_get_bool(dyn);
 }
 
-ss_char dyn_op_and (dyn_c* dyn1, dyn_c* dyn2)
+/**
+ * As depicted in the truth table below, this function performes the standard
+ * boolean AND operation, the extention with the None boolean type does not
+ * affect this operation. The truth value of every dynamic element is generated
+ * with the help of function dyn_get_bool_3.
+ *
+ * AND          | True  | False | None
+ * -------------|-------|-------|-------
+ * <b>True </b> | True  | False | None
+ * <b>False</b> | False | False | False
+ * <b>None </b> | None  | False | None
+ *
+ * The result of this operation is stored within the first parameter dyn1, if
+ * this value is a reference, then a new value is created, otherwise the
+ * original value gets overwritten.
+ *
+ * @see dyn_get_bool_3
+ * @see dyn_get_bool
+ *
+ * @param[out] dyn1 in- and output dynamic element
+ * @param[in]  dyn2 second operand
+ *
+ * @return DYN_TRUE, operation can be applied on every combination of dynamic
+ *         data types
+ */
+trilean dyn_op_and (dyn_c* dyn1, dyn_c* dyn2)
 {
     ss_char o1 = dyn_get_bool_3(dyn1);
     ss_char o2 = dyn_get_bool_3(dyn2);
@@ -414,7 +540,32 @@ ss_char dyn_op_and (dyn_c* dyn1, dyn_c* dyn2)
     return DYN_TRUE;
 }
 
-ss_char dyn_op_or (dyn_c* dyn1, dyn_c* dyn2)
+/**
+ * As depicted in the truth table below, this function performes the standard
+ * boolean OR operation, the extention with the None boolean type does not
+ * affect this operation. The truth value of every dynamic element is generated
+ * with the help of function dyn_get_bool_3.
+ *
+ * OR           | True  | False | None
+ * -------------|-------|-------|-------
+ * <b>True </b> | True  | True  | True
+ * <b>False</b> | True  | False | None
+ * <b>None </b> | True  | None  | None
+ *
+ * The result of this operation is stored within the first parameter dyn1, if
+ * this value is a reference, then a new value is created, otherwise the
+ * original value gets overwritten.
+ *
+ * @see dyn_get_bool_3
+ * @see dyn_get_bool
+ *
+ * @param[out] dyn1 in- and output dynamic element
+ * @param[in]  dyn2 second operand
+ *
+ * @return DYN_TRUE, operation can be applied on every combination of dynamic
+ *         data types
+ */
+trilean dyn_op_or (dyn_c* dyn1, dyn_c* dyn2)
 {
     ss_char o1 = dyn_get_bool_3(dyn1);
     ss_char o2 = dyn_get_bool_3(dyn2);
@@ -429,7 +580,33 @@ ss_char dyn_op_or (dyn_c* dyn1, dyn_c* dyn2)
     return DYN_TRUE;
 }
 
-ss_char dyn_op_xor (dyn_c* dyn1, dyn_c* dyn2)
+
+/**
+ * As depicted in the truth table below, this function performes the standard
+ * boolean XOR operation, the extention with the None boolean type does not
+ * affect this operation. The truth value of every dynamic element is generated
+ * with the help of function dyn_get_bool_3.
+ *
+ * XOR          | True  | False | None
+ * -------------|-------|-------|------
+ * <b>True </b> | False | True  | None
+ * <b>False</b> | True  | False | None
+ * <b>None </b> | None  | None  | None
+ *
+ * The result of this operation is stored within the first parameter dyn1, if
+ * this value is a reference, then a new value is created, otherwise the
+ * original value gets overwritten.
+ *
+ * @see dyn_get_bool_3
+ * @see dyn_get_bool
+ *
+ * @param[out] dyn1 in- and output dynamic element
+ * @param[in]  dyn2 second operand
+ *
+ * @return DYN_TRUE, operation can be applied on every combination of dynamic
+ *         data types
+ */
+trilean dyn_op_xor (dyn_c* dyn1, dyn_c* dyn2)
 {
     ss_char o1 = dyn_get_bool_3(dyn1);
     ss_char o2 = dyn_get_bool_3(dyn2);
@@ -442,7 +619,29 @@ ss_char dyn_op_xor (dyn_c* dyn1, dyn_c* dyn2)
     return DYN_TRUE;
 }
 
-ss_char dyn_op_not (dyn_c* dyn)
+/**
+ * As depicted in the truth table below, this function performes the standard
+ * boolean NOT operation, the extention with the None boolean type does not
+ * affect this operation. The truth value of every dynamic element is generated
+ * with the help of function dyn_get_bool_3.
+ *
+ * NOT  | True  | False | None
+ * -----|-------|-------|-------
+ * NOT  | False | True  | None
+ *
+ * The result of this operation is stored within the first parameter dyn1, if
+ * this value is a reference, then a new value is created, otherwise the
+ * original value gets overwritten.
+ *
+ * @see dyn_get_bool_3
+ * @see dyn_get_bool
+ *
+ * @param[out] dyn in- and output dynamic element
+ *
+ * @return DYN_TRUE, operation can be applied on every combination of dynamic
+ *         data types
+ */
+trilean dyn_op_not (dyn_c* dyn)
 {
     CHECK_COPY_REFERENCE(dyn)
 
@@ -452,6 +651,21 @@ ss_char dyn_op_not (dyn_c* dyn)
     return DYN_TRUE;
 }
 
+/**
+ * @brief Common compare function for dynamic elements
+ *
+ * Basic compare function for dynamic data dypes, based on the relation between
+ * the input parameters, different values are returned, see the list below.
+ *
+ * @param dyn1 first dynamic parameter
+ * @param dyn2 second dynamic parameter
+ *
+ * @retval 0   if dyn1 == dyn2
+ * @retval 1   if dyn1 < dyn2
+ * @retval 2   if dyn1 > dyn2
+ * @retval 3   if dyn1 != dyn2
+ * @retval 4   if not comparable due to different data types (STRING <= SET)
+ */
 ss_char dyn_op_cmp (dyn_c* dyn1, dyn_c* dyn2)
 {
     enum{EQ,LT,GT,NEQ,TYPE,MARK=0xff};//0,1,2,3,4
@@ -550,16 +764,16 @@ ss_char dyn_op_cmp (dyn_c* dyn1, dyn_c* dyn2)
             if (DYN_LIST_LEN(tmp) > DYN_LIST_LEN(dyn2))
                 goto GOTO_GT;
             if (DYN_LIST_LEN(tmp) == DYN_LIST_LEN(dyn2)) {
+                if (DYN_LIST_LEN(tmp) == 0)
+                    goto GOTO_EQ;
+
                 //put marker into return value
                 ret = MARK;
                 for (i=0; i<DYN_LIST_LEN(tmp); ++i) {
                     dyn_set_ref(&tmp2, DYN_LIST_GET_REF(tmp, i));
-                    dyn_op_cmp(&tmp2, DYN_LIST_GET_REF(dyn2, i));
-                    if (ret != MARK && dyn_get_int(&tmp2) != ret)
-                        goto GOTO_NEQ;
-                    else
-                        ret =  dyn_get_int(&tmp2);
-
+                    ret = dyn_op_cmp(&tmp2, DYN_LIST_GET_REF(dyn2, i));
+                    if (ret != EQ)
+                        break;
                 }
                 //reached the end of the for loop
                 goto GOTO_RET;
@@ -583,17 +797,24 @@ GOTO_LT:
 GOTO_GT:
     ret = GT;
     goto GOTO_RET;
+/*
 GOTO_NEQ:
     ret = NEQ;
     goto GOTO_RET;
-
+*/
 GOTO_RET:
     //dyn_set_int(dyn1, ret);
     return ret;
 
 }
 
-ss_char dyn_op_eq (dyn_c* dyn1, dyn_c* dyn2)
+/**
+ * @param[in, out] dyn1 in and output parameter
+ * @param[in]      dyn2 exponent value
+ *
+ * @returns DYN_TRUE, can be performed onto any combination of types
+ */
+trilean dyn_op_eq (dyn_c* dyn1, dyn_c* dyn2)
 {
     dyn_set_bool(dyn1, dyn_op_cmp(dyn1, dyn2)
                        ? DYN_FALSE
@@ -601,8 +822,13 @@ ss_char dyn_op_eq (dyn_c* dyn1, dyn_c* dyn2)
     return DYN_TRUE;
 }
 
-
-ss_char dyn_op_ne (dyn_c* dyn1, dyn_c* dyn2)
+/**
+ * @param[in, out] dyn1 in and output parameter
+ * @param[in]      dyn2 exponent value
+ *
+ * @returns DYN_TRUE, can be performed onto any combination of types
+ */
+trilean dyn_op_ne (dyn_c* dyn1, dyn_c* dyn2)
 {
     dyn_set_bool(dyn1, dyn_op_cmp(dyn1, dyn2)
                        ? DYN_TRUE
@@ -610,10 +836,17 @@ ss_char dyn_op_ne (dyn_c* dyn1, dyn_c* dyn2)
     return DYN_TRUE;
 }
 
-
-char dyn_op_lt (dyn_c* dyn1, dyn_c* dyn2)
+/**
+ * @param[in, out] dyn1 in and output parameter
+ * @param[in]      dyn2 exponent value
+ *
+ * @returns DYN_TRUE, can be performed onto any combination of types
+ */
+trilean dyn_op_lt (dyn_c* dyn1, dyn_c* dyn2)
 {
     ss_char rslt = dyn_op_cmp (dyn1, dyn2);
+
+    // types not comparable
     if (rslt == 4)
         dyn_free(dyn1);
     else
@@ -623,17 +856,31 @@ char dyn_op_lt (dyn_c* dyn1, dyn_c* dyn2)
     return DYN_TRUE;
 }
 
-ss_char dyn_op_ge (dyn_c* dyn1, dyn_c* dyn2)
+/**
+ * @param[in, out] dyn1 in and output parameter
+ * @param[in]      dyn2 exponent value
+ *
+ * @returns DYN_TRUE, can be performed onto any combination of types
+ */
+trilean dyn_op_ge (dyn_c* dyn1, dyn_c* dyn2)
 {
     dyn_op_lt(dyn1, dyn2);
-    dyn_op_not(dyn1);
+    dyn_op_not(dyn1);       // NONE remains NONE
 
     return DYN_TRUE;
 }
 
-ss_char dyn_op_gt (dyn_c* dyn1, dyn_c* dyn2)
+/**
+ * @param[in, out] dyn1 in and output parameter
+ * @param[in]      dyn2 exponent value
+ *
+ * @returns DYN_TRUE, can be performed onto any combination of types
+ */
+trilean dyn_op_gt (dyn_c* dyn1, dyn_c* dyn2)
 {
     ss_char rslt = dyn_op_cmp (dyn1, dyn2);
+
+    // types not comparable
     if (rslt == 4)
         dyn_free(dyn1);
     else
@@ -643,37 +890,50 @@ ss_char dyn_op_gt (dyn_c* dyn1, dyn_c* dyn2)
     return DYN_TRUE;
 }
 
-
-ss_char dyn_op_le (dyn_c* dyn1, dyn_c* dyn2)
+/**
+ * @param[in, out] dyn1 in- and output parameter
+ * @param[in]      dyn2 exponent value
+ *
+ * @returns DYN_TRUE, can be performed onto any combination of types
+ */
+trilean dyn_op_le (dyn_c* dyn1, dyn_c* dyn2)
 {
     dyn_op_gt(dyn1, dyn2);
-    dyn_op_not(dyn1);
+    dyn_op_not(dyn1); // NONE remains NONE
 
     return DYN_TRUE;
 }
 
-
-ss_char dyn_op_in (dyn_c *dyn1, dyn_c *dyn2)
+/**
+ * Can only be applied if the container is of type LIST, SET, or DICT.
+ *
+ * @param[in, out] in and output parameter
+ * @param[in]      dyn2 exponent value
+ *
+ * @retval DYN_TRUE   if the operation could be applied
+ * @retval DYN_FALSE  otherwise
+ */
+trilean dyn_op_in (dyn_c *element, dyn_c *container)
 {
-    dyn_c *tmp = DYN_IS_REFERENCE(dyn1) ? dyn1->data.ref : dyn1;
+    dyn_c *tmp = DYN_IS_REFERENCE(element) ? element->data.ref : element;
 
-    if(DYN_IS_REFERENCE(dyn2))
-        dyn2 = dyn2->data.ref;
+    if(DYN_IS_REFERENCE(container))
+        container = container->data.ref;
 
-    switch (DYN_TYPE(dyn2)) {
+    switch (DYN_TYPE(container)) {
         case SET:
         case LIST:
         case DICT:
-            dyn_set_bool(dyn1, search(dyn2, tmp));
+            dyn_set_bool(element, search(container, tmp));
             return DYN_TRUE;
     }
 
-    dyn_free(dyn1);
+    dyn_free(element);
     return DYN_FALSE;
 }
 
 
-char dyn_op_b_not(dyn_c *dyn)
+trilean dyn_op_b_not(dyn_c *dyn)
 {
     if (DYN_TYPE(dyn) == REFERENCE2)
         DYN_TYPE(dyn) = REFERENCE;
@@ -690,7 +950,8 @@ char dyn_op_b_not(dyn_c *dyn)
     return DYN_FALSE;
 }
 
-char dyn_op_b_and(dyn_c *dyn1, dyn_c *dyn2)
+
+trilean dyn_op_b_and(dyn_c *dyn1, dyn_c *dyn2)
 {
     CHECK_REFERENCE(dyn1, dyn2)
 
@@ -703,7 +964,7 @@ char dyn_op_b_and(dyn_c *dyn1, dyn_c *dyn2)
     return DYN_FALSE;
 }
 
-char dyn_op_b_or(dyn_c *dyn1, dyn_c *dyn2)
+trilean dyn_op_b_or(dyn_c *dyn1, dyn_c *dyn2)
 {
     CHECK_REFERENCE(dyn1, dyn2)
 
@@ -717,7 +978,7 @@ char dyn_op_b_or(dyn_c *dyn1, dyn_c *dyn2)
 }
 
 
-char dyn_op_b_xor(dyn_c *dyn1, dyn_c *dyn2)
+trilean dyn_op_b_xor(dyn_c *dyn1, dyn_c *dyn2)
 {
     CHECK_REFERENCE(dyn1, dyn2)
 
@@ -731,7 +992,7 @@ char dyn_op_b_xor(dyn_c *dyn1, dyn_c *dyn2)
 }
 
 
-char dyn_op_b_shift_l(dyn_c *dyn1, dyn_c *dyn2)
+trilean dyn_op_b_shift_l(dyn_c *dyn1, dyn_c *dyn2)
 {
     CHECK_REFERENCE(dyn1, dyn2)
 
@@ -744,7 +1005,7 @@ char dyn_op_b_shift_l(dyn_c *dyn1, dyn_c *dyn2)
     return DYN_FALSE;
 }
 
-char dyn_op_b_shift_r(dyn_c *dyn1, dyn_c *dyn2)
+trilean dyn_op_b_shift_r(dyn_c *dyn1, dyn_c *dyn2)
 {
     CHECK_REFERENCE(dyn1, dyn2)
 

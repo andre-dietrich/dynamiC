@@ -3,7 +3,7 @@ CXX    = g++
 RM	   = rm
 
 CFLAGS = -Wall -g
-OBJLIB = ../lib2s.so
+OBJLIB = ../libdynC.so
 
 SRC  = $(wildcard *.cpp)
 OBJ  = $(patsubst %.cpp,%.o,$(SRC))
@@ -19,7 +19,7 @@ all: $(OUT)
 		LD_LIBRARY_PATH=.. ./$<
 
 %.out: %.o
-		$(CXX) $< -o $@ -L. $(OBJLIB) -L/usr/lib -lpthread -lgtest -lgtest_main
+		$(CXX) $< -o $@ -L. $(OBJLIB) -L/usr/lib -lgtest -lgtest_main -lpthread
 
 %.o: %.cpp
 		$(CXX) $(CFLAGS) -I./.. -c $<

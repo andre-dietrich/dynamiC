@@ -124,7 +124,7 @@ ss_uint dyn_size (dyn_c* dyn)
 
         case FUNCTION: {
             bytes += sizeof(dyn_fct);
-            //bytes += ss_strlen(dyn->data.fct->info)+1;
+            bytes += ss_strlen(dyn->data.fct->info)+1;
             break;
         }
     }
@@ -132,25 +132,59 @@ ss_uint dyn_size (dyn_c* dyn)
     return bytes;
 }
 
-ss_char dyn_get_bool (dyn_c* dyn)
+/**
+ * The conversion of dynamic values into boolean truth values is similar to the
+ * one in Python. NONE, FUNCTION, etc. elements are also converted into
+ * DYN_FALSE in contrast to dyn_get_bool_3, which return DYN_NONE as a third
+ * truth value.
+ *
+ * @code
+ * dyn_get_bool(NONE)      == DYN_FALSE
+ * // BOOL
+ * dyn_get_bool(DYN_TRUE)  == DYN_TRUE
+ * dyn_get_bool(DYN_FALSE) == DYN_FALSE
+ * // INTEGER
+ * dyn_get_bool(0)         == DYN_FALSE
+ * otherwise                  DYN_TRUE
+ * // FLOAT
+ * dyn_get_bool(0.0)       == DYN_FALSE
+ * otherwise                  DYN_TRUE
+ *
+ * // STRING, LIST, SET, DICT
+ * if empty                   DYN_FALSE
+ * else                       DYN_TRUE
+ *
+ * // everything else results in ...
+ *                             DYN_FALSE
+ * @endcode
+ *
+ * @see dyn_get_bool_3
+ *
+ * @param dyn dynamic element to check for boolean truth value
+ *
+ * @return DYN_TRUE or DYN_FALSE according to the examples above
+ */
+trilean dyn_get_bool (dyn_c* dyn)
 {
 START:
     switch (DYN_TYPE(dyn)) {
-        case BOOL:      return dyn->data.b ? 1 : 0;
-        case INTEGER:   return dyn->data.i ? 1 : 0;
-        case FLOAT:     return dyn->data.f ? 1 : 0;
-        case STRING:    return dyn->data.str[0] ? 1 : 0;
+        case BOOL:      return dyn->data.b ? DYN_TRUE : DYN_FALSE;
+        case INTEGER:   return dyn->data.i ? DYN_TRUE : DYN_FALSE;
+        case FLOAT:     return dyn->data.f ? DYN_TRUE : DYN_FALSE;
+
+        case STRING:
 #ifdef S2_SET
         case SET:
 #endif
-        case LIST:      return DYN_LIST_LEN(dyn) ? 1 : 0;
-        case DICT:      return DYN_DICT_LEN(dyn) ? 1 : 0;
+        case LIST:
+        case DICT:
+                        return dyn_length(dyn) ? DYN_TRUE : DYN_FALSE;
         case REFERENCE2:
         case REFERENCE: dyn=dyn->data.ref;
                         goto START;
     }
 
-    return 0;
+    return DYN_FALSE;
 }
 
 ss_int dyn_get_int (dyn_c* dyn)
@@ -285,7 +319,7 @@ ss_char dyn_copy (dyn_c* dyn, dyn_c* copy)
                         break;
 #endif
         case DICT:      return dyn_dict_copy( dyn, copy );
-        case FUNCTION:  return dyn_fct_copy ( dyn, copy );
+        case FUNCTION:  return dyn_fct_copy  ( dyn, copy );
         case REFERENCE: return dyn_copy ( dyn->data.ref, copy );
         default: *copy = *dyn;
     }
@@ -298,9 +332,8 @@ void dyn_move (dyn_c* from, dyn_c* to)
 {
     dyn_free(to);
 
-    if (DYN_TYPE(from) == REFERENCE) {
+    if (DYN_TYPE(from) == REFERENCE)
         dyn_copy(from->data.ref, to);
-    }
     else
         *to = *from;
 

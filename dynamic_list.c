@@ -196,20 +196,20 @@ ss_ushort dyn_list_string_len (dyn_c* dyn)
 }
 
 
-void dyn_list_string_add (dyn_c* dyn, ss_str string)
+void dyn_list_string_add (dyn_c* dyn, ss_str str)
 {
-    ss_strcat(string, (ss_str)"[");
+    ss_strcat(str, (ss_str)"[");
     ss_ushort len = DYN_LIST_LEN(dyn);
 
     if (len == 0) {
-        ss_strcat(string, (ss_str)"]");
+        ss_strcat(str, (ss_str)"]");
         return;
     }
 
     ss_ushort i;
     for (i=0; i<len; i++) {
-        dyn_string_add(DYN_LIST_GET_REF(dyn, i), string);
-        ss_strcat(string, (ss_str)",");
+        dyn_string_add(DYN_LIST_GET_REF(dyn, i), str);
+        ss_strcat(str, (ss_str)",");
     }
-    string[ss_strlen(string)-1] = ']';
+    str[ss_strlen(str)-1] = ']';
 }

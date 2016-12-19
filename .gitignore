@@ -1,0 +1,11 @@
+dynamic_dict.o
+dynamic_function.o
+dynamic_list.o
+dynamic.o
+dynamic_op.o
+dynamic_set.o
+ss_string.o
+libdynC.so
+test/test.out
+test/test_operations.out
+test/test_string.out
