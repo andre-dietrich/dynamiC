@@ -78,7 +78,6 @@ ss_char dyn_dict_resize(dyn_c* dyn, ss_ushort size)
             }
         }
 
-    //fprintf(stderr, "XXX %s\n", dyn_get_string(dict));
     return 0;
 }
 

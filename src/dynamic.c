@@ -1,6 +1,18 @@
 #include "dynamic.h"
 #include <stdio.h>
 
+
+/**
+ * Frees any kind of dynamic type and convertes it to a NONE element. For the
+ * the freeing of different data types the different free functions in the
+ * different modules is applied.
+ *
+ * @see dyn_list_free
+ * @see dyn_dict_free
+ * @see dyn_fct_free
+ *
+ * @param[in, out] dyn element to free, result is of type NONE
+ */
 void dyn_free (dyn_c* dyn)
 {
     switch (DYN_TYPE(dyn)) {
@@ -18,17 +30,36 @@ void dyn_free (dyn_c* dyn)
     dyn->type=NONE;
 }
 
+/**
+ * It is more appropriate to apply the macro DYN_TYPE instead of calling this
+ * function. This function is only applied to offer an interface if a compiled
+ * library is used.
+ *
+ * @param dyn element to check
+ *
+ * @returns a value defined in enumeration TYPE
+ */
 ss_char dyn_type (dyn_c* dyn)
 {
     return DYN_TYPE(dyn);
 }
 
+/**
+ * The additional initialization of data.i is used to set the data element to
+ * false. This is used to associate also NONE values directly with false.
+ *
+ * @param[in, out] dyn element
+ */
 void dyn_set_none (dyn_c* dyn)
 {
     dyn_free(dyn);
     dyn->data.i = 0;
 }
 
+/**
+ * @param[in, out] dyn element, which is either DYN_TRUE or DYN_FALSE
+ * @param[in] v boolean value
+ */
 void dyn_set_bool (dyn_c* dyn, ss_char v)
 {
     dyn_free(dyn);
@@ -36,6 +67,10 @@ void dyn_set_bool (dyn_c* dyn, ss_char v)
     dyn->data.b = v;
 }
 
+/**
+ * @param[in, out] dyn element, which is set to INTEGER
+ * @param[in] v integer value
+ */
 void dyn_set_int (dyn_c* dyn, ss_int v)
 {
     dyn_free(dyn);
@@ -43,6 +78,10 @@ void dyn_set_int (dyn_c* dyn, ss_int v)
     dyn->data.i = v;
 }
 
+/**
+ * @param[in, out] dyn element, which is set to FLOAT
+ * @param[in] v float value
+ */
 void dyn_set_float (dyn_c* dyn, ss_float v)
 {
     dyn_free(dyn);
@@ -50,6 +89,12 @@ void dyn_set_float (dyn_c* dyn, ss_float v)
     dyn->data.f = v;
 }
 
+/**
+ * This function can be used to reference anything via void pointers.
+ *
+ * @param[in, out] dyn element, which is set to reference the void pointer
+ * @param[in] v void value
+ */
 void dyn_set_extern (dyn_c* dyn, void* v)
 {
     dyn_free(dyn);
@@ -57,6 +102,15 @@ void dyn_set_extern (dyn_c* dyn, void* v)
     dyn->data.ex = v;
 }
 
+/**
+ * An new char array is allocated to store the entire passed string v.
+  *
+ * @param[in, out] dyn element, which is set to STRING
+ * @param[in] v C-string value
+ *
+ * @retval DYN_TRUE if the memory could allocated
+ * @retval DYN_FALSE otherwise
+ */
 ss_char dyn_set_string (dyn_c* dyn, char const * v)
 {
     dyn_free(dyn);
@@ -71,6 +125,13 @@ ss_char dyn_set_string (dyn_c* dyn, char const * v)
     return 0;
 }
 
+/**
+ * This function is used to store a reference to a dynamic element instead of
+ * copying it.
+ *
+ * @param[in, out] ref element, which is used to reference the original element
+ * @param[in] orig original dynamic element
+ */
 void dyn_set_ref (dyn_c* ref, dyn_c* orig)
 {
     dyn_free(ref);
@@ -79,6 +140,13 @@ void dyn_set_ref (dyn_c* ref, dyn_c* orig)
     ref->data.ref = DYN_IS_REFERENCE(orig) ? orig->data.ref : orig;
 }
 
+/**
+ * This function is intended calculate the size of an dynamic element in bytes.
+ *
+ * @param[in, out] dyn element to check
+ *
+ * @returns size in bytes
+ */
 ss_uint dyn_size (dyn_c* dyn)
 {
     ss_uint bytes = sizeof(dyn_c);
@@ -115,13 +183,6 @@ ss_uint dyn_size (dyn_c* dyn)
 
             break;
         }
-//        case PROCEDURE: {
-//            bytes += sizeof(dyn_proc);
-//            bytes += dyn->data.proc->length;
-//            bytes += dyn_size(&dyn->data.proc->params);
-//            break;
-//        }
-
         case FUNCTION: {
             bytes += sizeof(dyn_fct);
             bytes += ss_strlen(dyn->data.fct->info)+1;
@@ -187,6 +248,21 @@ START:
     return DYN_FALSE;
 }
 
+/**
+ * This function returns the integer value of an dynamic element, boolean,
+ * INTEGER, and (casted)FLOAT values can be used. For all other element 0
+ * is returned, that is why, the type should be checked previously as follows:
+ *
+ * @code
+ * if (DYN_TYPE(dyn) && DYN_TYPE(dyn) <= FLOAT) {
+ *    // it can be converted to an integer
+ * }
+ * @codend
+ *
+ * @param dyn element to convert to an int value
+ *
+ * @returns converted integer value
+ */
 ss_int dyn_get_int (dyn_c* dyn)
 {
 START:
@@ -201,7 +277,17 @@ START:
     return 0;
 }
 
-
+/**
+ * This function returns the FLOAT value of an dynamic element, boolean,
+ * INTEGER, and FLOAT values can be used. For all other element NaN is
+ * returned, in contrast to dyn_get_int.
+ *
+ * @see dyn_get_int
+ *
+ * @params dyn element to convert to float
+ *
+ * @returns converted float value
+ */
 ss_float dyn_get_float (dyn_c* dyn)
 {
 START:
@@ -213,9 +299,14 @@ START:
         case REFERENCE: dyn=dyn->data.ref;
                         goto START;
     }
-    return 0;
+    return 0.0/0.0; // Not a Number
 }
 
+/**
+ * @param dyn element of type EXTERN or type REFERENCE that refers to EXTERN
+ *
+ * @returns void pointer or NULL if a false type was passed
+ */
 void* dyn_get_extern (dyn_c* dyn)
 {
     if (DYN_IS_REFERENCE(dyn))
@@ -227,6 +318,17 @@ void* dyn_get_extern (dyn_c* dyn)
     return NULL;
 }
 
+/**
+ * Returns a string representation, of the passed element, new memory is
+ * automatically allocated and has to be freed afterwards. Also if a STRING is
+ * passed, then new memory is allocated.
+ *
+ * @see dyn_get_int
+ *
+ * @params dyn element to convert to STRING
+ *
+ * @returns pointer to a C-string
+ */
 ss_str dyn_get_string (dyn_c* dyn)
 {
     if (DYN_IS_REFERENCE(dyn))
@@ -244,6 +346,15 @@ ss_str dyn_get_string (dyn_c* dyn)
     return string;
 }
 
+/**
+ * Basic (recursive) function to attach string representations of dynamic
+ * element to a string.
+ *
+ * @params[in] dyn element to convert to string
+ * @params[in,out] string to attach the converted element to
+ *
+ * @returns converted float value
+ */
 void dyn_string_add (dyn_c* dyn, ss_str string)
 {
 START:
@@ -280,6 +391,11 @@ START:
     }
 }
 
+/**
+ * @params dyn any kind of element
+ *
+ * @returns length of string representation
+ */
 ss_ushort dyn_string_len (dyn_c* dyn)
 {
     ss_ushort len = 0;
@@ -307,6 +423,15 @@ START:
     return len;
 }
 
+/**
+ * Basic (recursive) copy function for creating deep copies of dynamic elements.
+ *
+ * @params[in] dyn original element
+ * @params[in,out] copy newly created element
+ *
+ * @retval DYN_TRUE if element could be copied
+ * @retval DYN_FALSE otherwise
+ */
 ss_char dyn_copy (dyn_c* dyn, dyn_c* copy)
 {
     switch (DYN_TYPE(dyn)) {
@@ -327,7 +452,15 @@ ss_char dyn_copy (dyn_c* dyn, dyn_c* copy)
     return 1;
 }
 
-
+/**
+ * Basic move function which moves the element from one dynamic element to
+ * another, without copying. This function can be used for moving heavy data
+ * types such as lists, sets, strings, etx. The from element is afterwards set
+ * to NONE.
+ *
+ * @params[in] from original element
+ * @params[in,out] to new element
+ */
 void dyn_move (dyn_c* from, dyn_c* to)
 {
     dyn_free(to);
@@ -341,10 +474,17 @@ void dyn_move (dyn_c* from, dyn_c* to)
         dyn_dict_set_loc(to);
 
     DYN_INIT(from);
-    //dyn_set_ref(from, to);
 }
 
-
+/**
+ * This function is used to calculate the length of diffent elements. This
+ * function is later used by dyn_get_bool to calculate the boolean value of
+ * of an element.
+ *
+ * @param dyn element of any type
+ *
+ * @returns calculated length
+ */
 ss_ushort dyn_length (dyn_c* dyn)
 {
 START:

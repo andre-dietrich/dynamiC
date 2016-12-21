@@ -22,7 +22,7 @@ all: $(OUT)
 		$(CXX) $< -o $@ -L. $(OBJLIB) -L/usr/lib -lgtest -lgtest_main -lpthread
 
 %.o: %.cpp
-		$(CXX) $(CFLAGS) -I./.. -c $<
+		$(CXX) $(CFLAGS) -I./../src -c $<
 
 clean:
 		$(RM) -f *.out *.o

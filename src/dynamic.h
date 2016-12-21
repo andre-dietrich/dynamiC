@@ -114,6 +114,9 @@ ss_ushort dyn_string_len      (dyn_c* dyn);
 
 /**
  * \defgroup DynamicList
+ *
+ * @brief All list related functions.
+ *
  * @{
  */
 //! Initialize dyn as list with default length
@@ -130,7 +133,7 @@ ss_ushort dyn_string_len      (dyn_c* dyn);
           &(dyn)->data.list->container[DYN_LIST_LEN(dyn)-i]
 
 //! Set dynamic element to list with maximal length
-ss_char   dyn_set_list_len    (dyn_c* list, ss_ushort len);
+ss_char   dyn_set_list_len    (dyn_c* dyn, ss_ushort len);
 //! Push new element to the end of a list
 dyn_c*    dyn_list_push       (dyn_c* list, dyn_c* element);
 //! Push NONE element to the end of a list
@@ -154,14 +157,17 @@ ss_char   dyn_list_insert     (dyn_c* list, dyn_c* element, ss_ushort i);
 //! Change the maximal space of a list
 ss_char   dyn_list_resize     (dyn_c* list, ss_ushort size);
 //! Return the length of the string representation of a list
-ss_ushort dyn_list_string_len (dyn_c* dyn);
+ss_ushort dyn_list_string_len (dyn_c* list);
 //! Add string representation of a list to str
-void      dyn_list_string_add (dyn_c* dyn, ss_str str);
+void      dyn_list_string_add (dyn_c* list, ss_str str);
 /**@}*/
 
 
 /**
  * \defgroup DynamicSet
+ *
+ * @brief Extension of type LIST to handle and implement SET
+ *
  * @{
  */
 #ifdef S2_SET
@@ -169,8 +175,8 @@ void      dyn_list_string_add (dyn_c* dyn, ss_str str);
 ss_char   dyn_set_set_len     (dyn_c* set, ss_ushort len);
 //! Insert new element into set, if and only if it is not included yet
 ss_char   dyn_set_insert      (dyn_c* set, dyn_c* element);
-//! Delete element from a set
-ss_char   dyn_set_remove      (dyn_c* set, dyn_c* element);
+// Delete element from a set
+//ss_char   dyn_set_remove      (dyn_c* set, dyn_c* element);
 #endif
 /**@}*/
 
