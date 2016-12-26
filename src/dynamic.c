@@ -39,7 +39,7 @@ void dyn_free (dyn_c* dyn)
  *
  * @returns a value defined in enumeration TYPE
  */
-ss_char dyn_type (dyn_c* dyn)
+TYPE dyn_type (dyn_c* dyn)
 {
     return DYN_TYPE(dyn);
 }

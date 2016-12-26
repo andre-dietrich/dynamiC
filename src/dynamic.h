@@ -51,7 +51,7 @@
           DYN_TYPE(dyn)==REFERENCE || DYN_TYPE(dyn)==REFERENCE2
 
 //! Return type value of a dynamic element @see TYPE
-ss_char   dyn_type            (dyn_c* dyn);
+TYPE      dyn_type            (dyn_c* dyn);
 //! free allocated memory
 void      dyn_free            (dyn_c* dyn);
 //! Deep copy dynamic element
@@ -238,11 +238,11 @@ void      dyn_dict_string_add(dyn_c* dyn, ss_str string);
  * \defgroup DynamicFunction
  * @{
  */
-ss_char  dyn_set_fct          (dyn_c* dyn, void *ptr, ss_byte type, ss_str info);
-ss_char  dyn_set_fct_ss       (dyn_c* dyn, dyn_c* params, ss_ushort length, ss_char* code, ss_str info);
-ss_char* dyn_fct_get_ss       (dyn_c* dyn);
+trilean  dyn_set_fct          (dyn_c* dyn, void *ptr, ss_byte type, ss_str info);
+trilean  dyn_set_fct_ss       (dyn_c* dyn, dyn_c* params, ss_ushort length, ss_char* code, ss_str info);
+ss_str   dyn_fct_get_ss       (dyn_c* dyn);
 void     dyn_fct_free         (dyn_c* dyn);
-ss_char  dyn_fct_copy         (dyn_c* dyn, dyn_c* copy);
+trilean  dyn_fct_copy         (dyn_c* dyn, dyn_c* copy);
 /**@}*/
 
 /**

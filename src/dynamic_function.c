@@ -2,7 +2,7 @@
 
 
 
-ss_char dyn_set_fct(dyn_c* dyn, void *ptr, ss_byte type, ss_str info)
+trilean dyn_set_fct(dyn_c* dyn, void *ptr, ss_byte type, ss_str info)
 {
     dyn_free(dyn);
 
@@ -23,16 +23,16 @@ ss_char dyn_set_fct(dyn_c* dyn, void *ptr, ss_byte type, ss_str info)
                 }
             }
         }
-        return 1;
+        return DYN_TRUE;
     }
 
     free(dyn->data.fct);
 
-    return 0;
+    return DYN_FALSE;
 }
 
 
-ss_char dyn_set_fct_ss(dyn_c* dyn, dyn_c* params,
+trilean dyn_set_fct_ss(dyn_c* dyn, dyn_c* params,
                      ss_ushort length, ss_char* code,
                      ss_str info)
 {
@@ -52,7 +52,7 @@ ss_char dyn_set_fct_ss(dyn_c* dyn, dyn_c* params,
                 DYN_INIT(&proc->params);
                 if (dyn_copy(params, &proc->params)){
                     dyn->data.fct->ptr = proc;
-                    return 1;
+                    return DYN_TRUE;
                 }
                 free(proc->code);
             }
@@ -62,11 +62,11 @@ ss_char dyn_set_fct_ss(dyn_c* dyn, dyn_c* params,
         dyn_fct_free(dyn);
     }
 
-    return 0;
+    return DYN_FALSE;
 }
 
 
-ss_char dyn_fct_free(dyn_c* dyn)
+void dyn_fct_free(dyn_c* dyn)
 {
     if (!dyn->data.fct->type) {
         dyn_proc *proc = (dyn_proc*) dyn->data.fct->ptr;
@@ -78,11 +78,9 @@ ss_char dyn_fct_free(dyn_c* dyn)
     if (dyn->data.fct->info != NULL)
         free(dyn->data.fct->info);
     free(dyn->data.fct);
-
-    return 1;
 }
 
-ss_char dyn_fct_copy(dyn_c* dyn, dyn_c* copy)
+trilean dyn_fct_copy(dyn_c* dyn, dyn_c* copy)
 {
     if (dyn->data.fct->type)
         return dyn_set_fct( copy,
@@ -100,7 +98,7 @@ ss_char dyn_fct_copy(dyn_c* dyn, dyn_c* copy)
 }
 
 
-ss_char* dyn_fct_get_ss (dyn_c* dyn)
+ss_str dyn_fct_get_ss (dyn_c* dyn)
 {
     return ((dyn_proc*)dyn->data.fct->ptr)->code;
 }

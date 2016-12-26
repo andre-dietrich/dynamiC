@@ -53,7 +53,7 @@ typedef float         ss_float;
 /**
  * @brief Basic data type definitions
  */
-enum TYPE {
+typedef enum {
     NONE,               ///< None type without any value
     BOOL,               ///< Boolean 0==False, 1==True
     BYTE,               ///< not used
@@ -69,7 +69,7 @@ enum TYPE {
     REFERENCE,          ///< dyn_c* for internal usage only
     REFERENCE2,         ///< dyn_c*, explicite reference
     MISCELLANEOUS       ///< can be used for different purposes
-};
+} TYPE;
 
 /** @brief common dynamic data type
  */
