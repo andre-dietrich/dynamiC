@@ -55,7 +55,7 @@ ss_char   dyn_type            (dyn_c* dyn);
 //! free allocated memory
 void      dyn_free            (dyn_c* dyn);
 //! Deep copy dynamic element
-ss_char   dyn_copy            (dyn_c* dyn,  dyn_c* copy);
+trilean   dyn_copy            (dyn_c* dyn,  dyn_c* copy);
 //! Move dynamic element to new reference, from is of type NONE afterwards
 void      dyn_move            (dyn_c* from, dyn_c* to);
 /** @brief Reterns the length of an element.
@@ -78,7 +78,7 @@ void      dyn_set_float       (dyn_c* dyn, ss_float v);
 //! Set dynamic element to point to an arbitrary value
 void      dyn_set_extern      (dyn_c* dyn, void*    v);
 //! Set dynamic element to STRING
-ss_char   dyn_set_string      (dyn_c* dyn, char const * v);
+trilean   dyn_set_string      (dyn_c* dyn, char const * v);
 //! Set dynamic element as reference to another dynamic element
 void      dyn_set_ref         (dyn_c* ref, dyn_c* orig);
 
@@ -133,29 +133,29 @@ ss_ushort dyn_string_len      (dyn_c* dyn);
           &(dyn)->data.list->container[DYN_LIST_LEN(dyn)-i]
 
 //! Set dynamic element to list with maximal length
-ss_char   dyn_set_list_len    (dyn_c* dyn, ss_ushort len);
+trilean   dyn_set_list_len    (dyn_c* dyn, ss_ushort len);
 //! Push new element to the end of a list
 dyn_c*    dyn_list_push       (dyn_c* list, dyn_c* element);
 //! Push NONE element to the end of a list
 dyn_c*    dyn_list_push_none  (dyn_c* list);
 //! Pop the last element from the list and move it to param element
-ss_char   dyn_list_pop        (dyn_c* list, dyn_c* element);
+trilean   dyn_list_pop        (dyn_c* list, dyn_c* element);
 //! Copy the ith element of a list to param element
-ss_char   dyn_list_get        (dyn_c* list, dyn_c* element, ss_short i);
+trilean   dyn_list_get        (dyn_c* list, dyn_c* element, ss_short i);
 //! Return a reference to the ith element within list, negative values are allowed
 dyn_c*    dyn_list_get_ref    (dyn_c* list, ss_short i);
 //! Pop i elements from the end of a list
-ss_char   dyn_list_popi       (dyn_c* list, ss_short i);
+trilean   dyn_list_popi       (dyn_c* list, ss_short i);
 //! Free the allocated memory of the entire list and set it to NONE
-ss_char   dyn_list_free       (dyn_c* list);
+void      dyn_list_free       (dyn_c* list);
 //! Make a deep copy of the entire list
-ss_char   dyn_list_copy       (dyn_c* list, dyn_c* copy);
+trilean   dyn_list_copy       (dyn_c* list, dyn_c* copy);
 //! Delete the ith element from a list
-ss_char   dyn_list_remove     (dyn_c* list, ss_ushort i);
+trilean   dyn_list_remove     (dyn_c* list, ss_ushort i);
 //! Insert a new element at the ith position into a list
-ss_char   dyn_list_insert     (dyn_c* list, dyn_c* element, ss_ushort i);
+trilean   dyn_list_insert     (dyn_c* list, dyn_c* element, ss_ushort i);
 //! Change the maximal space of a list
-ss_char   dyn_list_resize     (dyn_c* list, ss_ushort size);
+trilean   dyn_list_resize     (dyn_c* list, ss_ushort size);
 //! Return the length of the string representation of a list
 ss_ushort dyn_list_string_len (dyn_c* list);
 //! Add string representation of a list to str
@@ -172,9 +172,9 @@ void      dyn_list_string_add (dyn_c* list, ss_str str);
  */
 #ifdef S2_SET
 //! Initialize dynamic element as empty set with maximal length
-ss_char   dyn_set_set_len     (dyn_c* set, ss_ushort len);
+trilean   dyn_set_set_len     (dyn_c* set, ss_ushort len);
 //! Insert new element into set, if and only if it is not included yet
-ss_char   dyn_set_insert      (dyn_c* set, dyn_c* element);
+trilean   dyn_set_insert      (dyn_c* set, dyn_c* element);
 // Delete element from a set
 //ss_char   dyn_set_remove      (dyn_c* set, dyn_c* element);
 #endif
@@ -200,19 +200,19 @@ ss_char   dyn_set_insert      (dyn_c* set, dyn_c* element);
 #define   DYN_DICT_LENGTH(dyn)        dyn->value.data.list->length
 
 //! Set dyn to a dictionary with a max. length of elements
-ss_char   dyn_set_dict        (dyn_c* dyn, ss_ushort length);
+trilean   dyn_set_dict        (dyn_c* dyn, ss_ushort length);
 //! Replace the ith element in a dictionary with a new value
-ss_char   dyn_dict_change     (dyn_c* dyn, ss_ushort i, dyn_c *value);
+trilean   dyn_dict_change     (dyn_c* dyn, ss_ushort i, dyn_c *value);
 //! Insert a new key-value pair into the dictionary
 dyn_c*    dyn_dict_insert     (dyn_c* dyn, ss_str key,  dyn_c *value);
 //! Remove key-value pair from dictionary
-ss_char   dyn_dict_remove     (dyn_c* dyn, ss_str key);
+trilean   dyn_dict_remove     (dyn_c* dyn, ss_str key);
 //! Get the reference to value stored at key
 dyn_c*    dyn_dict_get        (dyn_c* dyn, ss_str key);
 //! Set the loc reference in all procedures (object-oriented)
-ss_char   dyn_dict_set_loc    (dyn_c* dyn);
+trilean   dyn_dict_set_loc    (dyn_c* dyn);
 //! Set the available space for elements
-ss_char   dyn_dict_resize     (dyn_c* dyn, ss_ushort size);
+trilean   dyn_dict_resize     (dyn_c* dyn, ss_ushort size);
 
 //! Get the reference to ith value in dict
 dyn_c*    dyn_dict_get_i_ref (dyn_c* dyn, ss_ushort i);
@@ -222,11 +222,11 @@ ss_str    dyn_dict_get_i_key (dyn_c* dyn, ss_ushort i);
 //! Check if dict has key and return its position - 1 (returns 0 if not found)
 ss_ushort dyn_dict_has_key   (dyn_c* dyn, ss_str key);
 //! todo
-ss_char   dyn_dict_empty     (dyn_c* dyn);
+void      dyn_dict_empty     (dyn_c* dyn);
 //! Free all allocated memory
-ss_char   dyn_dict_free      (dyn_c* dyn);
+void      dyn_dict_free      (dyn_c* dyn);
 //! Copy the entire dict
-ss_char   dyn_dict_copy      (dyn_c* dyn, dyn_c* copy);
+trilean   dyn_dict_copy      (dyn_c* dyn, dyn_c* copy);
 
 //! Calculate the required string length
 ss_ushort dyn_dict_string_len(dyn_c* dyn);
@@ -241,7 +241,7 @@ void      dyn_dict_string_add(dyn_c* dyn, ss_str string);
 ss_char  dyn_set_fct          (dyn_c* dyn, void *ptr, ss_byte type, ss_str info);
 ss_char  dyn_set_fct_ss       (dyn_c* dyn, dyn_c* params, ss_ushort length, ss_char* code, ss_str info);
 ss_char* dyn_fct_get_ss       (dyn_c* dyn);
-ss_char  dyn_fct_free         (dyn_c* dyn);
+void     dyn_fct_free         (dyn_c* dyn);
 ss_char  dyn_fct_copy         (dyn_c* dyn, dyn_c* copy);
 /**@}*/
 

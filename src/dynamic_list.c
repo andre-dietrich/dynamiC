@@ -20,7 +20,7 @@
  * @retval DYN_TRUE   if the required memory could be allocated
  * @retval DYN_FALSE  otherwise
  */
-ss_char dyn_set_list_len (dyn_c* dyn, ss_ushort len)
+trilean dyn_set_list_len (dyn_c* dyn, ss_ushort len)
 {
     dyn_free(dyn);
 
@@ -49,11 +49,8 @@ ss_char dyn_set_list_len (dyn_c* dyn, ss_ushort len)
 
 /**
  * @param[in, out] list  input put has to be a list
- *
- * @retval DYN_TRUE   if the required memory could be allocated
- * @retval DYN_FALSE  otherwise
  */
-ss_char dyn_list_free (dyn_c* list)
+void dyn_list_free (dyn_c* list)
 {
     ss_ushort len = DYN_LIST_LEN(list);
 
@@ -65,8 +62,6 @@ ss_char dyn_list_free (dyn_c* list)
 
     free(list->data.list->container);
     free(list->data.list);
-
-    return DYN_TRUE;
 }
 
 /**
@@ -79,7 +74,7 @@ ss_char dyn_list_free (dyn_c* list)
  * @retval DYN_TRUE   if the required memory could be allocated
  * @retval DYN_FALSE  otherwise
  */
-ss_char dyn_list_resize (dyn_c* list, ss_ushort size)
+trilean dyn_list_resize (dyn_c* list, ss_ushort size)
 {
     ss_ushort i;
 //    ss_ushort len = dyn_length(list);
@@ -95,10 +90,10 @@ ss_char dyn_list_resize (dyn_c* list, ss_ushort size)
         }
 
         list->data.list->space = size;
-        return 1;
+        return DYN_TRUE;
     }
 
-    return 0;
+    return DYN_FALSE;
 }
 
 /**
@@ -157,7 +152,7 @@ dyn_c* dyn_list_push_none (dyn_c* list)
  * @retval DYN_TRUE   if the required memory could be allocated
  * @retval DYN_FALSE  otherwise
  */
-ss_char dyn_list_remove (dyn_c* list, ss_ushort i)
+trilean dyn_list_remove (dyn_c* list, ss_ushort i)
 {
     if (DYN_LIST_LEN(list) > i) {
         for(;i<DYN_LIST_LEN(list)-1; ++i) {
@@ -184,7 +179,7 @@ ss_char dyn_list_remove (dyn_c* list, ss_ushort i)
  *
  * @retval DYN_TRUE   if the required memory could be allocated
  */
-ss_char dyn_list_insert (dyn_c* list, dyn_c* element, ss_ushort i)
+trilean dyn_list_insert (dyn_c* list, dyn_c* element, ss_ushort i)
 {
     ss_ushort n = DYN_LIST_LEN(list);
     if (n >= i) {
@@ -207,7 +202,7 @@ ss_char dyn_list_insert (dyn_c* list, dyn_c* element, ss_ushort i)
  *
  * @retval DYN_TRUE   if worked properly
  */
-ss_char dyn_list_pop(dyn_c* list, dyn_c* element)
+trilean dyn_list_pop(dyn_c* list, dyn_c* element)
 {
     dyn_move(DYN_LIST_GET_END(list), element);
     list->data.list->length--;
@@ -223,7 +218,7 @@ ss_char dyn_list_pop(dyn_c* list, dyn_c* element)
  * @param[in, out] list input has to be of type LIST
  * @param[in] i number of elements to be popped
  */
-ss_char dyn_list_popi (dyn_c* list, ss_short i)
+trilean dyn_list_popi (dyn_c* list, ss_short i)
 {
     while(i--)
         dyn_free(&list->data.list->container[ --list->data.list->length ]);
@@ -245,7 +240,7 @@ ss_char dyn_list_popi (dyn_c* list, ss_short i)
  * @retval DYN_TRUE  if the element was found and coppied
  * @retval DYN_FALSE otherwise
  */
-ss_char dyn_list_get (dyn_c* list, dyn_c* element, ss_short i)
+trilean dyn_list_get (dyn_c* list, dyn_c* element, ss_short i)
 {
     dyn_free(element);
     ss_short len = DYN_LIST_LEN(list);
@@ -291,7 +286,7 @@ dyn_c* dyn_list_get_ref (dyn_c* list, ss_short i)
  * @retval DYN_TRUE  if the element was found and coppied
  * @retval DYN_FALSE otherwise
  */
-ss_char dyn_list_copy (dyn_c* list, dyn_c* copy)
+trilean dyn_list_copy (dyn_c* list, dyn_c* copy)
 {
     ss_ushort len = DYN_LIST_LEN(list);
 

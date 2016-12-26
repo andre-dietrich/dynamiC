@@ -111,7 +111,7 @@ void dyn_set_extern (dyn_c* dyn, void* v)
  * @retval DYN_TRUE if the memory could allocated
  * @retval DYN_FALSE otherwise
  */
-ss_char dyn_set_string (dyn_c* dyn, char const * v)
+trilean dyn_set_string (dyn_c* dyn, char const * v)
 {
     dyn_free(dyn);
 
@@ -120,9 +120,9 @@ ss_char dyn_set_string (dyn_c* dyn, char const * v)
     if (dyn->data.str) {
         dyn->type = STRING;
         ss_strcpy(dyn->data.str, (ss_str)v);
-        return 1;
+        return DYN_TRUE;
     }
-    return 0;
+    return DYN_FALSE;
 }
 
 /**
@@ -432,7 +432,7 @@ START:
  * @retval DYN_TRUE if element could be copied
  * @retval DYN_FALSE otherwise
  */
-ss_char dyn_copy (dyn_c* dyn, dyn_c* copy)
+trilean dyn_copy (dyn_c* dyn, dyn_c* copy)
 {
     switch (DYN_TYPE(dyn)) {
         case STRING:    return dyn_set_string( copy, dyn->data.str );
@@ -449,7 +449,7 @@ ss_char dyn_copy (dyn_c* dyn, dyn_c* copy)
         default: *copy = *dyn;
     }
 
-    return 1;
+    return DYN_TRUE;
 }
 
 /**

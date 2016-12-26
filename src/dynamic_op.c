@@ -18,7 +18,7 @@
     CHECK_NOCOPY_REFERENCE(X2)
 
 
-ss_ushort search (dyn_c *container, dyn_c *element)
+static ss_ushort search (dyn_c *container, dyn_c *element)
 {
     ss_ushort i = 0;
 

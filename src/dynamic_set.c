@@ -12,7 +12,7 @@
  * @retval DYN_TRUE   if memory for the SET could be allocated
  * @retval DYN_FALSE  otherwise
  */
-ss_char dyn_set_set_len (dyn_c* dyn, ss_ushort len)
+trilean dyn_set_set_len (dyn_c* dyn, ss_ushort len)
 {
     if (dyn_set_list_len(dyn, len)) {
         dyn->type = SET;
@@ -31,7 +31,7 @@ ss_char dyn_set_set_len (dyn_c* dyn, ss_ushort len)
  * @retval DYN_TRUE   if memory for the SET could be allocated
  * @retval DYN_FALSE  otherwise
  */
-ss_char dyn_set_insert (dyn_c* set, dyn_c* element)
+trilean dyn_set_insert (dyn_c* set, dyn_c* element)
 {
     dyn_c rslt;
     DYN_INIT(&rslt);
