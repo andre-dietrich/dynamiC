@@ -337,10 +337,10 @@ ss_str dyn_get_string (dyn_c* dyn)
     ss_str string = (ss_str) malloc(dyn_string_len(dyn) + 1);
     if (string) {
         string[0] = '\0';
-        if (DYN_TYPE(dyn) == STRING)
+        /*if (DYN_TYPE(dyn) == STRING)
             ss_strcpy(string, dyn->data.str);
-        else
-            dyn_string_add(dyn, string);
+        else*/
+        dyn_string_add(dyn, string);
     }
 
     return string;

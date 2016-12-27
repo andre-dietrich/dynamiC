@@ -27,9 +27,12 @@ lib: $(OBJ)
 clean:
 		cd test; make clean
 		$(RM) -f *.out *.o *.so *.a
+		cd src; $(RM) -f *.out *.o *.so *.a
+
+clean-docs:
 		rm -rf docs
 
-docs:
+docs: clean-docs
 		doxygen
 
 test: lib
