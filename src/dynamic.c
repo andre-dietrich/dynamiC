@@ -115,11 +115,11 @@ trilean dyn_set_string (dyn_c* dyn, char const * v)
 {
     dyn_free(dyn);
 
-    dyn->data.str = (dyn_str) malloc(ss_strlen((dyn_str)v)+1);
+    dyn->data.str = (dyn_str) malloc(dyn_strlen((dyn_str)v)+1);
 
     if (dyn->data.str) {
         dyn->type = STRING;
-        ss_strcpy(dyn->data.str, (dyn_str)v);
+        dyn_strcpy(dyn->data.str, (dyn_str)v);
         return DYN_TRUE;
     }
     return DYN_FALSE;
@@ -153,7 +153,7 @@ dyn_uint dyn_size (dyn_c* dyn)
 
     switch (DYN_TYPE(dyn)) {
         case STRING: {
-            bytes += ss_strlen(dyn->data.str)+1;
+            bytes += dyn_strlen(dyn->data.str)+1;
             break;
         }
 #ifdef S2_SET
@@ -177,7 +177,7 @@ dyn_uint dyn_size (dyn_c* dyn)
             dyn_ushort i;
             for (i=0; i<len; ++i) {
                 if (dyn->data.dict->key[i])
-                    bytes += ss_strlen(dyn->data.dict->key[i]);
+                    bytes += dyn_strlen(dyn->data.dict->key[i]);
                 bytes += 1;
             }
 
@@ -185,7 +185,7 @@ dyn_uint dyn_size (dyn_c* dyn)
         }
         case FUNCTION: {
             bytes += sizeof(dyn_fct);
-            bytes += ss_strlen(dyn->data.fct->info)+1;
+            bytes += dyn_strlen(dyn->data.fct->info)+1;
             break;
         }
     }
@@ -338,7 +338,7 @@ dyn_str dyn_get_string (dyn_c* dyn)
     if (string) {
         string[0] = '\0';
         /*if (DYN_TYPE(dyn) == STRING)
-            ss_strcpy(string, dyn->data.str);
+            dyn_strcpy(string, dyn->data.str);
         else*/
         dyn_string_add(dyn, string);
     }
@@ -359,26 +359,26 @@ void dyn_string_add (dyn_c* dyn, dyn_str string)
 {
 START:
     switch (DYN_TYPE(dyn)) {
-        case BOOL:      ss_strcat(string, dyn->data.b ? (dyn_str)"1": (dyn_str)"0");
+        case BOOL:      dyn_strcat(string, dyn->data.b ? (dyn_str)"1": (dyn_str)"0");
                         break;
-        case INTEGER:   ss_itoa(&string[ss_strlen(string)], dyn->data.i);
+        case INTEGER:   dyn_itoa(&string[dyn_strlen(string)], dyn->data.i);
                         break;
-        case FLOAT:     ss_ftoa(&string[ss_strlen(string)], dyn->data.f);
+        case FLOAT:     dyn_ftoa(&string[dyn_strlen(string)], dyn->data.f);
                         break;
-        case STRING:    ss_strcat(string, dyn->data.str);
+        case STRING:    dyn_strcat(string, dyn->data.str);
                         break;
-        case EXTERN:    ss_strcat(string, (dyn_str)"ex");
-                        //ss_itoa(&string[ss_strlen(string)], *((dyn_int*) dyn->data.ex));
+        case EXTERN:    dyn_strcat(string, (dyn_str)"ex");
+                        //dyn_itoa(&string[dyn_strlen(string)], *((dyn_int*) dyn->data.ex));
                         break;
-        case FUNCTION:  ss_strcat(string, (dyn_str)"FCT");
+        case FUNCTION:  dyn_strcat(string, (dyn_str)"FCT");
                         break;
         case LIST:      dyn_list_string_add(dyn, string);
                         break;
 #ifdef S2_SET
-        case SET: {     dyn_uint i = ss_strlen(string);
+        case SET: {     dyn_uint i = dyn_strlen(string);
                         dyn_list_string_add(dyn, string);
                         string[i] = '{';
-                        string[ss_strlen(string)-1] = '}';
+                        string[dyn_strlen(string)-1] = '}';
                         break;
         }
 #endif
@@ -387,7 +387,7 @@ START:
         case REFERENCE2:
         case REFERENCE: dyn=dyn->data.ref;
                         goto START;
-        case MISCELLANEOUS: ss_strcat(string, (dyn_str)"$");
+        case MISCELLANEOUS: dyn_strcat(string, (dyn_str)"$");
     }
 }
 
@@ -405,12 +405,12 @@ START:
     switch (DYN_TYPE(dyn)) {
         case MISCELLANEOUS:
         case BOOL:      len = 1;                        break;
-        case INTEGER:   len = ss_itoa_len(dyn->data.i); break;
-        case FLOAT:     len = ss_ftoa_len(dyn->data.f); break;
-        case EXTERN:    len = 2; // + ss_itoa_len(*((dyn_int*) dyn->data.ex));
+        case INTEGER:   len = dyn_itoa_len(dyn->data.i); break;
+        case FLOAT:     len = dyn_ftoa_len(dyn->data.f); break;
+        case EXTERN:    len = 2; // + dyn_itoa_len(*((dyn_int*) dyn->data.ex));
                         break;
         case FUNCTION:  len = 3;                        break;
-        case STRING:    len = ss_strlen(dyn->data.str); break;
+        case STRING:    len = dyn_strlen(dyn->data.str); break;
 #ifdef S2_SET
         case SET:
 #endif
@@ -489,7 +489,7 @@ dyn_ushort dyn_length (dyn_c* dyn)
 {
 START:
     switch (DYN_TYPE(dyn)) {
-        case STRING:    return ss_strlen(dyn->data.str);
+        case STRING:    return dyn_strlen(dyn->data.str);
 #ifdef S2_SET
         case SET:
 #endif

@@ -19,9 +19,9 @@
 
 #include <stdlib.h>
 
-#include "ss_string.h"
 #include "dynamic_types.h"
 #include "dynamic_defines.h"
+#include "dynamic_string.h"
 
 
 /**

@@ -9,3 +9,4 @@ libdynC.so
 test/test.out
 test/test_operations.out
 test/test_string.out
+src/dynamic_string.o

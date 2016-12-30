@@ -331,18 +331,18 @@ dyn_ushort dyn_list_string_len (dyn_c* list)
  */
 void dyn_list_string_add (dyn_c* list, dyn_str str)
 {
-    ss_strcat(str, (dyn_str)"[");
+    dyn_strcat(str, (dyn_str)"[");
     dyn_ushort len = DYN_LIST_LEN(list);
 
     if (len == 0) {
-        ss_strcat(str, (dyn_str)"]");
+        dyn_strcat(str, (dyn_str)"]");
         return;
     }
 
     dyn_ushort i;
     for (i=0; i<len; i++) {
         dyn_string_add(DYN_LIST_GET_REF(list, i), str);
-        ss_strcat(str, (dyn_str)",");
+        dyn_strcat(str, (dyn_str)",");
     }
-    str[ss_strlen(str)-1] = ']';
+    str[dyn_strlen(str)-1] = ']';
 }

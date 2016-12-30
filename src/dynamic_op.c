@@ -124,7 +124,7 @@ trilean dyn_op_add (dyn_c* dyn1, dyn_c* dyn2)
                           goto LABEL_OK;
             case STRING:  {
                 if (DYN_TYPE(dyn1) == STRING) {
-                    dyn1->data.str = (dyn_str) realloc(dyn1->data.str, ss_strlen(dyn1->data.str) +
+                    dyn1->data.str = (dyn_str) realloc(dyn1->data.str, dyn_strlen(dyn1->data.str) +
                                                                       dyn_string_len(dyn2) + 1 );
                     dyn_string_add(dyn2, dyn1->data.str);
                 }
@@ -278,7 +278,7 @@ trilean dyn_op_mul (dyn_c* dyn1, dyn_c* dyn2)
                     case 0: dyn_set_string(dyn1, "");
                     case 1: break;
                     default: {
-                        dyn_ushort len = ss_strlen(dyn1->data.str);
+                        dyn_ushort len = dyn_strlen(dyn1->data.str);
                         dyn1->data.str = (dyn_str) realloc(dyn1->data.str, len * i + 1);
 
                         dyn_str c = &dyn1->data.str[len];
@@ -711,7 +711,7 @@ dyn_char dyn_op_cmp (dyn_c* dyn1, dyn_c* dyn2)
         case STRING: {
             if (DYN_TYPE(tmp) != DYN_TYPE(dyn2))
                 goto GOTO_TYPE;
-            i = ss_strcmp(tmp->data.str, dyn2->data.str);
+            i = dyn_strcmp(tmp->data.str, dyn2->data.str);
             if (i < 0)
                 goto GOTO_LT;
             if (i > 0)

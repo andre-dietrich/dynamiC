@@ -70,9 +70,9 @@ dyn_c* dyn_dict_insert(dyn_c* dyn, dyn_str key, dyn_c* value)
     }
 
     i = DYN_DICT_LENGTH(dict);
-    dict->key[i] = (dyn_str) malloc(ss_strlen(key)+1);
+    dict->key[i] = (dyn_str) malloc(dyn_strlen(key)+1);
     if (dict->key[i]) {
-        ss_strcpy(dict->key[i], key);
+        dyn_strcpy(dict->key[i], key);
         DYN_DICT_LENGTH(dict)++;
 
 GOTO__CHANGE:
@@ -136,7 +136,7 @@ dyn_ushort dyn_dict_has_key (dyn_c* dyn, dyn_str key)
     dyn_ushort length = DYN_DICT_LENGTH(dyn->data.dict);
     dyn_ushort i;
     for (i=0; i<length; ++i, ++s_key) {
-        if (!ss_strcmp(*s_key, key))
+        if (!dyn_strcmp(*s_key, key))
             return i+1;
     }
 
@@ -286,7 +286,7 @@ dyn_ushort dyn_dict_string_len (dyn_c* dyn)
     if (len) {
         dyn_ushort i = len;
         while (i--) {
-            len += ss_strlen(dict->key[i]);
+            len += dyn_strlen(dict->key[i]);
             len += dyn_string_len(DYN_DICT_GET_I_REF(dyn, i));
             len += 2; // comma and colon
         }
@@ -299,21 +299,21 @@ dyn_ushort dyn_dict_string_len (dyn_c* dyn)
 
 void dyn_dict_string_add (dyn_c* dyn, dyn_str string)
 {
-    ss_strcat(string, (dyn_str)"{");
+    dyn_strcat(string, (dyn_str)"{");
 
     if ( dyn_length(dyn) ) {
         dyn_ushort length = dyn->data.dict->value.data.list->length;
         dyn_ushort i;
         for (i=0; i<length; ++i) {
-            ss_strcat(string, DYN_DICT_GET_I_KEY(dyn, i));
-            ss_strcat(string, (dyn_str)":");
+            dyn_strcat(string, DYN_DICT_GET_I_KEY(dyn, i));
+            dyn_strcat(string, (dyn_str)":");
             dyn_string_add(DYN_DICT_GET_I_REF(dyn, i), string);
-            ss_strcat(string, (dyn_str)",");
+            dyn_strcat(string, (dyn_str)",");
         }
-        string[ss_strlen(string)-1] = '}';
+        string[dyn_strlen(string)-1] = '}';
     }
     else
-        ss_strcat(string, (dyn_str)"}");
+        dyn_strcat(string, (dyn_str)"}");
 }
 
 dyn_char fct_set_loc (dyn_c* proc, dyn_c* loc)

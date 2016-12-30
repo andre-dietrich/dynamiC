@@ -6,7 +6,7 @@ ECHO	 = echo
 CFLAGS = -Wall -g #-Os
 OBJLIB = libdynC.so
 
-SRC = $(wildcard src/dynamic*.c) src/ss_string.c
+SRC = $(wildcard src/dynamic*.c)
 OBJ = $(patsubst %.c,%.o,$(SRC))
 
 

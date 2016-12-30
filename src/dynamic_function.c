@@ -16,10 +16,10 @@ trilean dyn_set_fct(dyn_c* dyn, void *ptr, dyn_byte type, dyn_str info)
         dyn->data.fct->type = type;
         dyn->data.fct->info = NULL;
         if (info!=NULL) {
-            if (ss_strlen(info)) {
-                dyn->data.fct->info = (dyn_str) malloc( ss_strlen(info)+1 );
+            if (dyn_strlen(info)) {
+                dyn->data.fct->info = (dyn_str) malloc( dyn_strlen(info)+1 );
                 if (dyn->data.fct->info) {
-                    ss_strcpy( dyn->data.fct->info, info );
+                    dyn_strcpy( dyn->data.fct->info, info );
                 }
             }
         }
