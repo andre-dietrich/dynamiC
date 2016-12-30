@@ -20,7 +20,7 @@
  * @retval DYN_TRUE   if the required memory could be allocated
  * @retval DYN_FALSE  otherwise
  */
-trilean dyn_set_list_len (dyn_c* dyn, ss_ushort len)
+trilean dyn_set_list_len (dyn_c* dyn, dyn_ushort len)
 {
     dyn_free(dyn);
 
@@ -52,7 +52,7 @@ trilean dyn_set_list_len (dyn_c* dyn, ss_ushort len)
  */
 void dyn_list_free (dyn_c* list)
 {
-    ss_ushort len = DYN_LIST_LEN(list);
+    dyn_ushort len = DYN_LIST_LEN(list);
 
     // free all elements within the allocated container element
     dyn_c *ptr = list->data.list->container;
@@ -74,10 +74,10 @@ void dyn_list_free (dyn_c* list)
  * @retval DYN_TRUE   if the required memory could be allocated
  * @retval DYN_FALSE  otherwise
  */
-trilean dyn_list_resize (dyn_c* list, ss_ushort size)
+trilean dyn_list_resize (dyn_c* list, dyn_ushort size)
 {
-    ss_ushort i;
-//    ss_ushort len = dyn_length(list);
+    dyn_ushort i;
+//    dyn_ushort len = dyn_length(list);
 
     dyn_c* new_list = (dyn_c*) realloc(list->data.list->container, size * sizeof(dyn_c));
 
@@ -152,7 +152,7 @@ dyn_c* dyn_list_push_none (dyn_c* list)
  * @retval DYN_TRUE   if the required memory could be allocated
  * @retval DYN_FALSE  otherwise
  */
-trilean dyn_list_remove (dyn_c* list, ss_ushort i)
+trilean dyn_list_remove (dyn_c* list, dyn_ushort i)
 {
     if (DYN_LIST_LEN(list) > i) {
         for(;i<DYN_LIST_LEN(list)-1; ++i) {
@@ -179,9 +179,9 @@ trilean dyn_list_remove (dyn_c* list, ss_ushort i)
  *
  * @retval DYN_TRUE   if the required memory could be allocated
  */
-trilean dyn_list_insert (dyn_c* list, dyn_c* element, ss_ushort i)
+trilean dyn_list_insert (dyn_c* list, dyn_c* element, dyn_ushort i)
 {
-    ss_ushort n = DYN_LIST_LEN(list);
+    dyn_ushort n = DYN_LIST_LEN(list);
     if (n >= i) {
         dyn_list_push_none(list);
         ++n;
@@ -218,7 +218,7 @@ trilean dyn_list_pop(dyn_c* list, dyn_c* element)
  * @param[in, out] list input has to be of type LIST
  * @param[in] i number of elements to be popped
  */
-trilean dyn_list_popi (dyn_c* list, ss_short i)
+trilean dyn_list_popi (dyn_c* list, dyn_short i)
 {
     while(i--)
         dyn_free(&list->data.list->container[ --list->data.list->length ]);
@@ -240,10 +240,10 @@ trilean dyn_list_popi (dyn_c* list, ss_short i)
  * @retval DYN_TRUE  if the element was found and coppied
  * @retval DYN_FALSE otherwise
  */
-trilean dyn_list_get (dyn_c* list, dyn_c* element, ss_short i)
+trilean dyn_list_get (dyn_c* list, dyn_c* element, dyn_short i)
 {
     dyn_free(element);
-    ss_short len = DYN_LIST_LEN(list);
+    dyn_short len = DYN_LIST_LEN(list);
 
     if (i >= 0) {
         if (i <= len) {
@@ -268,7 +268,7 @@ trilean dyn_list_get (dyn_c* list, dyn_c* element, ss_short i)
  *
  * @returns reference to the ith value
  */
-dyn_c* dyn_list_get_ref (dyn_c* list, ss_short i)
+dyn_c* dyn_list_get_ref (dyn_c* list, dyn_short i)
 {
     if (i >= 0 && i<=DYN_LIST_LEN(list))
         return &list->data.list->container[i];
@@ -288,7 +288,7 @@ dyn_c* dyn_list_get_ref (dyn_c* list, ss_short i)
  */
 trilean dyn_list_copy (dyn_c* list, dyn_c* copy)
 {
-    ss_ushort len = DYN_LIST_LEN(list);
+    dyn_ushort len = DYN_LIST_LEN(list);
 
     if (dyn_set_list_len(copy, len)) {
         list = list->data.list->container;
@@ -311,10 +311,10 @@ trilean dyn_list_copy (dyn_c* list, dyn_c* copy)
  *
  * @returns length of string
  */
-ss_ushort dyn_list_string_len (dyn_c* list)
+dyn_ushort dyn_list_string_len (dyn_c* list)
 {
-    ss_ushort size = DYN_LIST_LEN(list)+1;
-    ss_ushort len = 2 + size;
+    dyn_ushort size = DYN_LIST_LEN(list)+1;
+    dyn_ushort len = 2 + size;
 
     while (--size)
         len += dyn_string_len(DYN_LIST_GET_REF(list, size-1));
@@ -329,20 +329,20 @@ ss_ushort dyn_list_string_len (dyn_c* list)
  * @param[in] list input has to be of type LIST
  * @param[in, out] str with added list representation
  */
-void dyn_list_string_add (dyn_c* list, ss_str str)
+void dyn_list_string_add (dyn_c* list, dyn_str str)
 {
-    ss_strcat(str, (ss_str)"[");
-    ss_ushort len = DYN_LIST_LEN(list);
+    ss_strcat(str, (dyn_str)"[");
+    dyn_ushort len = DYN_LIST_LEN(list);
 
     if (len == 0) {
-        ss_strcat(str, (ss_str)"]");
+        ss_strcat(str, (dyn_str)"]");
         return;
     }
 
-    ss_ushort i;
+    dyn_ushort i;
     for (i=0; i<len; i++) {
         dyn_string_add(DYN_LIST_GET_REF(list, i), str);
-        ss_strcat(str, (ss_str)",");
+        ss_strcat(str, (dyn_str)",");
     }
     str[ss_strlen(str)-1] = ']';
 }

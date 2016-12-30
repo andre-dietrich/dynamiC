@@ -18,13 +18,13 @@
     CHECK_NOCOPY_REFERENCE(X2)
 
 
-static ss_ushort search (dyn_c *container, dyn_c *element)
+static dyn_ushort search (dyn_c *container, dyn_c *element)
 {
-    ss_ushort i = 0;
+    dyn_ushort i = 0;
 
     switch (DYN_TYPE(container)) {
         case DICT: {
-            ss_str key = dyn_get_string(element);
+            dyn_str key = dyn_get_string(element);
             i = dyn_dict_has_key(container, key);
             free(key);
             return i;
@@ -124,13 +124,13 @@ trilean dyn_op_add (dyn_c* dyn1, dyn_c* dyn2)
                           goto LABEL_OK;
             case STRING:  {
                 if (DYN_TYPE(dyn1) == STRING) {
-                    dyn1->data.str = (ss_str) realloc(dyn1->data.str, ss_strlen(dyn1->data.str) +
+                    dyn1->data.str = (dyn_str) realloc(dyn1->data.str, ss_strlen(dyn1->data.str) +
                                                                       dyn_string_len(dyn2) + 1 );
                     dyn_string_add(dyn2, dyn1->data.str);
                 }
                 else {
                     tmp.type = STRING;
-                    tmp.data.str = (ss_str) malloc(dyn_string_len(dyn1) + dyn_string_len(dyn2) + 1);
+                    tmp.data.str = (dyn_str) malloc(dyn_string_len(dyn1) + dyn_string_len(dyn2) + 1);
                     tmp.data.str[0]='\0';
                     dyn_string_add(dyn1, tmp.data.str);
                     dyn_string_add(dyn2, tmp.data.str);
@@ -151,7 +151,7 @@ trilean dyn_op_add (dyn_c* dyn1, dyn_c* dyn2)
             }
             case SET: {
                 if (DYN_TYPE(dyn1) == DYN_TYPE(dyn2)) {
-                    ss_ushort i;
+                    dyn_ushort i;
                     for (i=0; i<DYN_LIST_LEN(dyn2); ++i)
                         dyn_set_insert(dyn1, DYN_LIST_GET_REF(dyn2, i));
                 } else if (DYN_TYPE(dyn1) == SET) {
@@ -165,7 +165,7 @@ trilean dyn_op_add (dyn_c* dyn1, dyn_c* dyn2)
             }
             case DICT: {
                 if (DYN_TYPE(dyn1) == DYN_TYPE(dyn2)) {
-                    ss_ushort i;
+                    dyn_ushort i;
                     for (i=0; i<DYN_DICT_LEN(dyn2); ++i)
                         dyn_dict_insert(dyn1,
                                         DYN_DICT_GET_I_KEY(dyn2, i),
@@ -206,9 +206,9 @@ trilean dyn_op_sub (dyn_c* dyn1, dyn_c* dyn2)
             case FLOAT:   dyn_set_float(dyn1, dyn_get_float(dyn1) - dyn_get_float(dyn2));
                           goto LABEL_OK;
             case SET: {
-                ss_ushort pos;
+                dyn_ushort pos;
                 if (DYN_TYPE(dyn1) == DYN_TYPE(dyn2)) {
-                    ss_ushort i;
+                    dyn_ushort i;
                     for (i=0; i<DYN_LIST_LEN(dyn2); ++i) {
                         pos = search(dyn1, DYN_LIST_GET_REF(dyn2, i));
                         if (pos)
@@ -266,7 +266,7 @@ trilean dyn_op_mul (dyn_c* dyn1, dyn_c* dyn2)
             case FLOAT:   dyn_set_float(dyn1, dyn_get_float(dyn1) * dyn_get_float(dyn2));
                           goto LABEL_OK;
             case STRING:  {
-                ss_ushort i;
+                dyn_ushort i;
                 if (DYN_TYPE(dyn1) == INTEGER && DYN_TYPE(dyn2) == STRING) {
                     i = dyn_get_int(dyn1);
                     dyn_copy(dyn2, dyn1);
@@ -278,11 +278,11 @@ trilean dyn_op_mul (dyn_c* dyn1, dyn_c* dyn2)
                     case 0: dyn_set_string(dyn1, "");
                     case 1: break;
                     default: {
-                        ss_ushort len = ss_strlen(dyn1->data.str);
-                        dyn1->data.str = (ss_str) realloc(dyn1->data.str, len * i + 1);
+                        dyn_ushort len = ss_strlen(dyn1->data.str);
+                        dyn1->data.str = (dyn_str) realloc(dyn1->data.str, len * i + 1);
 
-                        ss_str c = &dyn1->data.str[len];
-                        ss_ushort j;
+                        dyn_str c = &dyn1->data.str[len];
+                        dyn_ushort j;
                         while(--i) {
                             for(j=0; j<len; ++j) {
                                 *c++ = dyn1->data.str[j];
@@ -294,7 +294,7 @@ trilean dyn_op_mul (dyn_c* dyn1, dyn_c* dyn2)
                 goto LABEL_OK;
             }
             case LIST: {
-                ss_ushort i;
+                dyn_ushort i;
                 if (DYN_TYPE(dyn1) == INTEGER && DYN_TYPE(dyn2) == LIST) {
                     i = dyn_get_int(dyn1);
                     dyn_copy(dyn2, dyn1);
@@ -303,14 +303,14 @@ trilean dyn_op_mul (dyn_c* dyn1, dyn_c* dyn2)
                 else
                     break;
 
-                ss_ushort len = DYN_LIST_LEN(dyn1);
+                dyn_ushort len = DYN_LIST_LEN(dyn1);
                 if (!i) {
                     dyn_set_list_len(dyn1, 1);
                     goto LABEL_OK;
                 }
                 if (i > 0) {
                     if (dyn_list_resize(dyn1, DYN_LIST_LEN(dyn1)*i ) ) {
-                        ss_ushort m, n;
+                        dyn_ushort m, n;
                         for (m=1; m<i; ++m) {
                             for (n=0; n<len; n++)
                                 dyn_list_push(dyn1, DYN_LIST_GET_REF(dyn1 ,n));
@@ -375,8 +375,8 @@ trilean dyn_op_mod (dyn_c* dyn1, dyn_c* dyn2)
 {
     CHECK_REFERENCE(dyn1, dyn2)
 
-    ss_char t1 = DYN_TYPE(dyn1);
-    ss_char t2 = DYN_TYPE(dyn2);
+    dyn_char t1 = DYN_TYPE(dyn1);
+    dyn_char t2 = DYN_TYPE(dyn2);
 
     if ( (t1 && t2) && t1 <= FLOAT && t2 <= FLOAT ) {
         dyn_set_int(dyn1, dyn_get_int(dyn1) % dyn_get_int(dyn2));
@@ -452,10 +452,10 @@ trilean dyn_op_pow (dyn_c* dyn1, dyn_c* dyn2)
     }
 
     if (DYN_TYPE(dyn2) == INTEGER) {
-        ss_int exponent = dyn_get_int(dyn2);
+        dyn_int exponent = dyn_get_int(dyn2);
 
         if (DYN_TYPE(dyn1) == INTEGER) {
-            ss_int base = dyn_get_int(dyn1);
+            dyn_int base = dyn_get_int(dyn1);
             if (exponent > 0) {
                 while (--exponent)
                     dyn1->data.i *= base;
@@ -467,7 +467,7 @@ trilean dyn_op_pow (dyn_c* dyn1, dyn_c* dyn2)
             }
             return DYN_TRUE;
         } else if (DYN_TYPE(dyn1) == FLOAT) {
-            ss_float base = dyn_get_float(dyn1);
+            dyn_float base = dyn_get_float(dyn1);
             if (exponent > 0) {
                 while (--exponent)
                     dyn1->data.f *= base;
@@ -527,8 +527,8 @@ trilean dyn_get_bool_3 (dyn_c* dyn)
  */
 trilean dyn_op_and (dyn_c* dyn1, dyn_c* dyn2)
 {
-    ss_char o1 = dyn_get_bool_3(dyn1);
-    ss_char o2 = dyn_get_bool_3(dyn2);
+    dyn_char o1 = dyn_get_bool_3(dyn1);
+    dyn_char o2 = dyn_get_bool_3(dyn2);
 
     if (o1 != DYN_NONE && o2 != DYN_NONE)
         dyn_set_bool(dyn1, o1 && o2);
@@ -567,8 +567,8 @@ trilean dyn_op_and (dyn_c* dyn1, dyn_c* dyn2)
  */
 trilean dyn_op_or (dyn_c* dyn1, dyn_c* dyn2)
 {
-    ss_char o1 = dyn_get_bool_3(dyn1);
-    ss_char o2 = dyn_get_bool_3(dyn2);
+    dyn_char o1 = dyn_get_bool_3(dyn1);
+    dyn_char o2 = dyn_get_bool_3(dyn2);
 
     if (o1 != DYN_NONE && o2 != DYN_NONE)
         dyn_set_bool(dyn1, o1 || o2);
@@ -608,8 +608,8 @@ trilean dyn_op_or (dyn_c* dyn1, dyn_c* dyn2)
  */
 trilean dyn_op_xor (dyn_c* dyn1, dyn_c* dyn2)
 {
-    ss_char o1 = dyn_get_bool_3(dyn1);
-    ss_char o2 = dyn_get_bool_3(dyn2);
+    dyn_char o1 = dyn_get_bool_3(dyn1);
+    dyn_char o2 = dyn_get_bool_3(dyn2);
 
     if (o1 != DYN_NONE && o2 != DYN_NONE)
         dyn_set_bool(dyn1, o1 != o2);
@@ -666,15 +666,15 @@ trilean dyn_op_not (dyn_c* dyn)
  * @retval 3   if dyn1 != dyn2
  * @retval 4   if not comparable due to different data types (STRING <= SET)
  */
-ss_char dyn_op_cmp (dyn_c* dyn1, dyn_c* dyn2)
+dyn_char dyn_op_cmp (dyn_c* dyn1, dyn_c* dyn2)
 {
     enum{EQ,LT,GT,NEQ,TYPE,MARK=0xff};//0,1,2,3,4
 
     dyn_c  *tmp = DYN_IS_REFERENCE(dyn1) ? dyn1->data.ref : dyn1;
-    ss_ushort ret;
+    dyn_ushort ret;
     dyn_c tmp2;
     DYN_INIT(&tmp2);
-    ss_ushort i;
+    dyn_ushort i;
 
     if(DYN_IS_REFERENCE(dyn2))
         dyn2=dyn2->data.ref;
@@ -844,7 +844,7 @@ trilean dyn_op_ne (dyn_c* dyn1, dyn_c* dyn2)
  */
 trilean dyn_op_lt (dyn_c* dyn1, dyn_c* dyn2)
 {
-    ss_char rslt = dyn_op_cmp (dyn1, dyn2);
+    dyn_char rslt = dyn_op_cmp (dyn1, dyn2);
 
     // types not comparable
     if (rslt == 4)
@@ -878,7 +878,7 @@ trilean dyn_op_ge (dyn_c* dyn1, dyn_c* dyn2)
  */
 trilean dyn_op_gt (dyn_c* dyn1, dyn_c* dyn2)
 {
-    ss_char rslt = dyn_op_cmp (dyn1, dyn2);
+    dyn_char rslt = dyn_op_cmp (dyn1, dyn2);
 
     // types not comparable
     if (rslt == 4)

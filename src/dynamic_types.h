@@ -27,28 +27,28 @@ typedef enum {
 
 /** @brief Basic 8bit signed integer
  */
-typedef char          ss_char;
+typedef char          dyn_char;
 /** @brief Basic 8bit integer (0 - 255)
  */
-typedef unsigned char ss_byte;
+typedef unsigned char dyn_byte;
 /** @brief Standard dynamic C string
  */
-typedef char*         ss_str;
+typedef char*         dyn_str;
 /** @brief 16bit unsigned integer
  */
-typedef uint16_t      ss_ushort;
+typedef uint16_t      dyn_ushort;
 /** @brief 16bit signed integer
  */
-typedef int16_t       ss_short;
+typedef int16_t       dyn_short;
 /** @brief 32bit signed integer, standard Integer type.
  */
-typedef int32_t       ss_int;
+typedef int32_t       dyn_int;
 /** @brief 32bit unsigned integer
  */
-typedef uint32_t      ss_uint;
+typedef uint32_t      dyn_uint;
 /** @brief basic float definition (32 bit)
  */
-typedef float         ss_float;
+typedef float         dyn_float;
 
 /**
  * @brief Basic data type definitions
@@ -97,10 +97,10 @@ typedef struct dynamic_function dyn_fct;
 struct dynamic {
 
     union {               /*@{*/
-        ss_char     b;    //!< boolean value
-        ss_int      i;    //!< basic integer
-        ss_float    f;    //!< float value
-        ss_str      str;  //!< pointer to character-array
+        dyn_char    b;    //!< boolean value
+        dyn_int     i;    //!< basic integer
+        dyn_float   f;    //!< float value
+        dyn_str     str;  //!< pointer to character-array
         dyn_list*   list; //!< pointer to dynamic list
         dyn_dict*   dict; //!< pointer to dynamic dictionary
         dyn_fct*    fct;  //!< pointer to function
@@ -117,9 +117,9 @@ struct dynamic {
  * todo.
  */
 struct dynamic_list {
-     ss_ushort length;      //!< elements in use
-     ss_ushort space;       //!< elements available
-     dyn_c     *container;  //!< pointer to an array of dynamic elements
+     dyn_ushort length;      //!< elements in use
+     dyn_ushort space;       //!< elements available
+     dyn_c      *container;  //!< pointer to an array of dynamic elements
 } __attribute__ ((packed));
 
 /**
@@ -128,8 +128,8 @@ struct dynamic_list {
  * todo.
  */
 struct dynamic_dict {
-     ss_str*   key;         //!< array to C strings used as identifiers
-     dyn_c     value;       //!< dynamic element of type dyn_list
+     dyn_str*   key;        //!< array to C strings used as identifiers
+     dyn_c      value;      //!< dynamic element of type dyn_list
 } __attribute__ ((packed));
 
 /**
@@ -138,9 +138,9 @@ struct dynamic_dict {
  * todo.
  */
 struct dynamic_procedure {
-     dyn_c     params;      //!< type NONE for no, Otherwise dictionaries are used
-     ss_ushort length;      //!< bytecode length
-     ss_char*  code;        //!< pointer to bytecode
+     dyn_c      params;     //!< type NONE for no, Otherwise dictionaries are used
+     dyn_ushort length;     //!< bytecode length
+     dyn_char*  code;       //!< pointer to bytecode
 } __attribute__ ((packed));
 
 /**
@@ -150,8 +150,8 @@ struct dynamic_procedure {
  */
 struct dynamic_function {
      void*     ptr;         //!< pointer to function
-     ss_byte   type;        //!< 0 basic C-fct, 1 system C-fct, 2 procedure
-     ss_str    info;        //!< info string
+     dyn_byte  type;        //!< 0 basic C-fct, 1 system C-fct, 2 procedure
+     dyn_str   info;        //!< info string
 } __attribute__ ((packed));
 
 

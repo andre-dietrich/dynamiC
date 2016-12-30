@@ -37,7 +37,7 @@ TEST(Operations_Arithmetic, Negation){
     DYN_TEST_1(&Int_n22,  22,         dyn_get_int);
     DYN_TEST_1(&Float_0,  0.0,        dyn_get_float);
     DYN_TEST_1(&Float_n22,22.0,       dyn_get_float);
-    DYN_TEST_1(&Float_n22_222, (ss_float)22.222, dyn_get_float);
+    DYN_TEST_1(&Float_n22_222, (dyn_float)22.222, dyn_get_float);
 
     DYN_TEST_1(&Str_abc, NONE, dyn_type);
     DYN_TEST_1(&List_0_1_n22, NONE, dyn_type);
@@ -70,7 +70,7 @@ TEST(Operations_Arithmetic, Addition){
     DYN_TEST_2(&List_0_1_n22, &Str_abc,       4, dyn_length);
 
     DYN_TEST_2(&List_0_1_n22, &List_0_1_n22,  4, dyn_length);
-    
+
     DYN_TEST_END;
     #undef DYN_TEST_FCT
 }

@@ -10,9 +10,9 @@
  *
  *  @return string length
  */
-ss_ushort ss_strlen(ss_str str)
+dyn_ushort ss_strlen(dyn_str str)
 {
-    ss_ushort len = 0;
+    dyn_ushort len = 0;
 
     while (*str++)
         ++len;
@@ -37,7 +37,7 @@ ss_ushort ss_strlen(ss_str str)
  *  @param source       C string to be appended. This should not overlap
  *                      destination.
  */
-void ss_strcat(ss_str destination, ss_str source)
+void ss_strcat(dyn_str destination, dyn_str source)
 {
     ss_strcpy(&destination[ss_strlen(destination)], source);
 }
@@ -59,9 +59,9 @@ void ss_strcat(ss_str destination, ss_str source)
  *  @param source       C string to be appended. This should not overlap
  *                      destination.
  */
-void ss_strcat2(ss_str destination, ss_str source)
+void ss_strcat2(dyn_str destination, dyn_str source)
 {
-    destination = (ss_str) realloc(destination, ss_strlen(destination)+ss_strlen(source)+1);
+    destination = (dyn_str) realloc(destination, ss_strlen(destination)+ss_strlen(source)+1);
     ss_strcat(destination, source);
 }
 
@@ -77,7 +77,7 @@ void ss_strcat2(ss_str destination, ss_str source)
  *                           is to be copied.
  *  @param [in]  source      C string to be copied.
  */
-void ss_strcpy (ss_str destination, ss_str source)
+void ss_strcpy (dyn_str destination, dyn_str source)
 {
     while(*source)
         *destination++=*source++;
@@ -97,11 +97,11 @@ void ss_strcpy (ss_str destination, ss_str source)
  *  @param i  integer value to convert
  *  @returns  length of decimal string
  */
-ss_ushort ss_itoa_len (ss_int i)
+dyn_ushort ss_itoa_len (dyn_int i)
 {
     if (!i) return 1;
 
-    ss_ushort len = 0;
+    dyn_ushort len = 0;
 
     if (i < 0) {
         i *= -1;
@@ -123,7 +123,7 @@ ss_ushort ss_itoa_len (ss_int i)
  *  @param [out] str character array with ASCII representation of i
  *  @param [in]  i   integer value to convert
  */
-void ss_itoa (ss_str str, ss_int i)
+void ss_itoa (dyn_str str, dyn_int i)
 {
     char const digit[] = "0123456789";
 
@@ -145,12 +145,12 @@ void ss_itoa (ss_str str, ss_int i)
  *  @param f  float value to check
  *  @returns  string length
  */
-ss_ushort ss_ftoa_len (ss_float f)
+dyn_ushort ss_ftoa_len (dyn_float f)
 {
-    ss_ushort len = 1;
+    dyn_ushort len = 1;
 
-    ss_int a = (ss_int) f;
-    ss_int b = (ss_int) ((f - a) * FLOAT_DIGITS);
+    dyn_int a = (dyn_int) f;
+    dyn_int b = (dyn_int) ((f - a) * FLOAT_DIGITS);
 
     len += ss_itoa_len(a);
     len += ss_itoa_len(b);
@@ -168,14 +168,14 @@ ss_ushort ss_ftoa_len (ss_float f)
  *  @param [out] str character array with with new ASCII representation of f
  *  @param [in]  f   float value to convert
  */
-void ss_ftoa (ss_str str, ss_float f)
+void ss_ftoa (dyn_str str, dyn_float f)
 {
-    ss_int a = (ss_int) f;
-    ss_int b = (ss_int) ((f - a) * FLOAT_DIGITS);
+    dyn_int a = (dyn_int) f;
+    dyn_int b = (dyn_int) ((f - a) * FLOAT_DIGITS);
 
     ss_itoa(str, a);
 
-    ss_ushort len = ss_strlen(str);
+    dyn_ushort len = ss_strlen(str);
 
     str[len] = '.';
     ss_itoa(&str[len+1], b < 0 ? -b : b);
@@ -195,7 +195,7 @@ void ss_ftoa (ss_str str, ss_float f)
  *  @retval >0	the first character that does not match has a greater value in a
  *              than in b
  */
-ss_char ss_strcmp(ss_str a, ss_str b)
+dyn_char ss_strcmp(dyn_str a, dyn_str b)
 {
     while (*a == *b++) {
         if (*a++ == 0)

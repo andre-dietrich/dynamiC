@@ -2,7 +2,7 @@
 
 
 
-trilean dyn_set_fct(dyn_c* dyn, void *ptr, ss_byte type, ss_str info)
+trilean dyn_set_fct(dyn_c* dyn, void *ptr, dyn_byte type, dyn_str info)
 {
     dyn_free(dyn);
 
@@ -17,7 +17,7 @@ trilean dyn_set_fct(dyn_c* dyn, void *ptr, ss_byte type, ss_str info)
         dyn->data.fct->info = NULL;
         if (info!=NULL) {
             if (ss_strlen(info)) {
-                dyn->data.fct->info = (ss_str) malloc( ss_strlen(info)+1 );
+                dyn->data.fct->info = (dyn_str) malloc( ss_strlen(info)+1 );
                 if (dyn->data.fct->info) {
                     ss_strcpy( dyn->data.fct->info, info );
                 }
@@ -33,18 +33,18 @@ trilean dyn_set_fct(dyn_c* dyn, void *ptr, ss_byte type, ss_str info)
 
 
 trilean dyn_set_fct_ss(dyn_c* dyn, dyn_c* params,
-                     ss_ushort length, ss_char* code,
-                     ss_str info)
+                     dyn_ushort length, dyn_char* code,
+                     dyn_str info)
 {
     if( dyn_set_fct(dyn, NULL, 0, info) ) {
         dyn_proc *proc = (dyn_proc*) malloc(sizeof(dyn_proc));
 
         if (proc) {
             proc->length = length;
-            proc->code = (ss_char*) malloc(length);
+            proc->code = (dyn_char*) malloc(length);
 
             if (proc->code) {
-                ss_ushort  i;
+                dyn_ushort  i;
                 for (i=0; i<length; ++i){
                     proc->code[i] = code[i];
                 }
@@ -98,7 +98,7 @@ trilean dyn_fct_copy(dyn_c* dyn, dyn_c* copy)
 }
 
 
-ss_str dyn_fct_get_ss (dyn_c* dyn)
+dyn_str dyn_fct_get_ss (dyn_c* dyn)
 {
     return ((dyn_proc*)dyn->data.fct->ptr)->code;
 }

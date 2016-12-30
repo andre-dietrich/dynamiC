@@ -60,7 +60,7 @@ void dyn_set_none (dyn_c* dyn)
  * @param[in, out] dyn element, which is either DYN_TRUE or DYN_FALSE
  * @param[in] v boolean value
  */
-void dyn_set_bool (dyn_c* dyn, ss_char v)
+void dyn_set_bool (dyn_c* dyn, dyn_char v)
 {
     dyn_free(dyn);
     dyn->type = BOOL;
@@ -71,7 +71,7 @@ void dyn_set_bool (dyn_c* dyn, ss_char v)
  * @param[in, out] dyn element, which is set to INTEGER
  * @param[in] v integer value
  */
-void dyn_set_int (dyn_c* dyn, ss_int v)
+void dyn_set_int (dyn_c* dyn, dyn_int v)
 {
     dyn_free(dyn);
     dyn->type = INTEGER;
@@ -82,7 +82,7 @@ void dyn_set_int (dyn_c* dyn, ss_int v)
  * @param[in, out] dyn element, which is set to FLOAT
  * @param[in] v float value
  */
-void dyn_set_float (dyn_c* dyn, ss_float v)
+void dyn_set_float (dyn_c* dyn, dyn_float v)
 {
     dyn_free(dyn);
     dyn->type = FLOAT;
@@ -115,11 +115,11 @@ trilean dyn_set_string (dyn_c* dyn, char const * v)
 {
     dyn_free(dyn);
 
-    dyn->data.str = (ss_str) malloc(ss_strlen((ss_str)v)+1);
+    dyn->data.str = (dyn_str) malloc(ss_strlen((dyn_str)v)+1);
 
     if (dyn->data.str) {
         dyn->type = STRING;
-        ss_strcpy(dyn->data.str, (ss_str)v);
+        ss_strcpy(dyn->data.str, (dyn_str)v);
         return DYN_TRUE;
     }
     return DYN_FALSE;
@@ -147,9 +147,9 @@ void dyn_set_ref (dyn_c* ref, dyn_c* orig)
  *
  * @returns size in bytes
  */
-ss_uint dyn_size (dyn_c* dyn)
+dyn_uint dyn_size (dyn_c* dyn)
 {
-    ss_uint bytes = sizeof(dyn_c);
+    dyn_uint bytes = sizeof(dyn_c);
 
     switch (DYN_TYPE(dyn)) {
         case STRING: {
@@ -162,8 +162,8 @@ ss_uint dyn_size (dyn_c* dyn)
         case LIST: {
             bytes += sizeof(dyn_list);
 
-            ss_ushort len = dyn->data.list->space;
-            ss_ushort i;
+            dyn_ushort len = dyn->data.list->space;
+            dyn_ushort i;
             for (i=0; i<len; ++i)
                 bytes += dyn_size( DYN_LIST_GET_REF(dyn, i) );
 
@@ -173,8 +173,8 @@ ss_uint dyn_size (dyn_c* dyn)
             bytes += sizeof(dyn_dict);
             bytes += dyn_size(&dyn->data.dict->value);
 
-            ss_ushort len = dyn->data.dict->value.data.list->space;
-            ss_ushort i;
+            dyn_ushort len = dyn->data.dict->value.data.list->space;
+            dyn_ushort i;
             for (i=0; i<len; ++i) {
                 if (dyn->data.dict->key[i])
                     bytes += ss_strlen(dyn->data.dict->key[i]);
@@ -263,13 +263,13 @@ START:
  *
  * @returns converted integer value
  */
-ss_int dyn_get_int (dyn_c* dyn)
+dyn_int dyn_get_int (dyn_c* dyn)
 {
 START:
     switch (DYN_TYPE(dyn)) {
         case BOOL:      return dyn->data.b ? 1 : 0;
         case INTEGER:   return dyn->data.i;
-        case FLOAT:     return (ss_int)dyn->data.f;
+        case FLOAT:     return (dyn_int)dyn->data.f;
         case REFERENCE2:
         case REFERENCE: dyn=dyn->data.ref;
                         goto START;
@@ -288,12 +288,12 @@ START:
  *
  * @returns converted float value
  */
-ss_float dyn_get_float (dyn_c* dyn)
+dyn_float dyn_get_float (dyn_c* dyn)
 {
 START:
     switch (DYN_TYPE(dyn)) {
         case BOOL:      return dyn->data.b ? 1 : 0;
-        case INTEGER:   return (ss_float)dyn->data.i;
+        case INTEGER:   return (dyn_float)dyn->data.i;
         case FLOAT:     return dyn->data.f;
         case REFERENCE2:
         case REFERENCE: dyn=dyn->data.ref;
@@ -329,12 +329,12 @@ void* dyn_get_extern (dyn_c* dyn)
  *
  * @returns pointer to a C-string
  */
-ss_str dyn_get_string (dyn_c* dyn)
+dyn_str dyn_get_string (dyn_c* dyn)
 {
     if (DYN_IS_REFERENCE(dyn))
         dyn = dyn->data.ref;
 
-    ss_str string = (ss_str) malloc(dyn_string_len(dyn) + 1);
+    dyn_str string = (dyn_str) malloc(dyn_string_len(dyn) + 1);
     if (string) {
         string[0] = '\0';
         /*if (DYN_TYPE(dyn) == STRING)
@@ -355,11 +355,11 @@ ss_str dyn_get_string (dyn_c* dyn)
  *
  * @returns converted float value
  */
-void dyn_string_add (dyn_c* dyn, ss_str string)
+void dyn_string_add (dyn_c* dyn, dyn_str string)
 {
 START:
     switch (DYN_TYPE(dyn)) {
-        case BOOL:      ss_strcat(string, dyn->data.b ? (ss_str)"1": (ss_str)"0");
+        case BOOL:      ss_strcat(string, dyn->data.b ? (dyn_str)"1": (dyn_str)"0");
                         break;
         case INTEGER:   ss_itoa(&string[ss_strlen(string)], dyn->data.i);
                         break;
@@ -367,15 +367,15 @@ START:
                         break;
         case STRING:    ss_strcat(string, dyn->data.str);
                         break;
-        case EXTERN:    ss_strcat(string, (ss_str)"ex");
-                        //ss_itoa(&string[ss_strlen(string)], *((ss_int*) dyn->data.ex));
+        case EXTERN:    ss_strcat(string, (dyn_str)"ex");
+                        //ss_itoa(&string[ss_strlen(string)], *((dyn_int*) dyn->data.ex));
                         break;
-        case FUNCTION:  ss_strcat(string, (ss_str)"FCT");
+        case FUNCTION:  ss_strcat(string, (dyn_str)"FCT");
                         break;
         case LIST:      dyn_list_string_add(dyn, string);
                         break;
 #ifdef S2_SET
-        case SET: {     ss_uint i = ss_strlen(string);
+        case SET: {     dyn_uint i = ss_strlen(string);
                         dyn_list_string_add(dyn, string);
                         string[i] = '{';
                         string[ss_strlen(string)-1] = '}';
@@ -387,7 +387,7 @@ START:
         case REFERENCE2:
         case REFERENCE: dyn=dyn->data.ref;
                         goto START;
-        case MISCELLANEOUS: ss_strcat(string, (ss_str)"$");
+        case MISCELLANEOUS: ss_strcat(string, (dyn_str)"$");
     }
 }
 
@@ -396,9 +396,9 @@ START:
  *
  * @returns length of string representation
  */
-ss_ushort dyn_string_len (dyn_c* dyn)
+dyn_ushort dyn_string_len (dyn_c* dyn)
 {
-    ss_ushort len = 0;
+    dyn_ushort len = 0;
 
 START:
 
@@ -407,7 +407,7 @@ START:
         case BOOL:      len = 1;                        break;
         case INTEGER:   len = ss_itoa_len(dyn->data.i); break;
         case FLOAT:     len = ss_ftoa_len(dyn->data.f); break;
-        case EXTERN:    len = 2; // + ss_itoa_len(*((ss_int*) dyn->data.ex));
+        case EXTERN:    len = 2; // + ss_itoa_len(*((dyn_int*) dyn->data.ex));
                         break;
         case FUNCTION:  len = 3;                        break;
         case STRING:    len = ss_strlen(dyn->data.str); break;
@@ -485,7 +485,7 @@ void dyn_move (dyn_c* from, dyn_c* to)
  *
  * @returns calculated length
  */
-ss_ushort dyn_length (dyn_c* dyn)
+dyn_ushort dyn_length (dyn_c* dyn)
 {
 START:
     switch (DYN_TYPE(dyn)) {

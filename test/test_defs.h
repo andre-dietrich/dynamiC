@@ -108,7 +108,7 @@ void test_param_init() {
 
     DYN_INIT(&Dict_a1);
     dyn_set_dict(&Dict_a1, 1);
-    dyn_dict_insert(&Dict_a1, (ss_str)"a", &Int_1);
+    dyn_dict_insert(&Dict_a1, (dyn_str)"a", &Int_1);
 
     // todo
 };
