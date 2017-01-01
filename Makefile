@@ -6,7 +6,7 @@ ECHO	 = echo
 CFLAGS = -Wall -g #-Os
 OBJLIB = libdynC.so
 
-SRC = $(wildcard src/dynamic*.c)
+SRC = $(wildcard dynamic*.c)
 OBJ = $(patsubst %.c,%.o,$(SRC))
 
 
@@ -27,7 +27,6 @@ lib: $(OBJ)
 clean:
 		cd test; make clean
 		$(RM) -f *.out *.o *.so *.a
-		cd src; $(RM) -f *.out *.o *.so *.a
 
 clean-docs:
 		rm -rf docs
