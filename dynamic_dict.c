@@ -1,3 +1,17 @@
+/**
+ *  @file dynamic_dict.c
+ *  @author André Dietrich
+ *  @date 14 December 2016
+ *
+ *  @copyright Copyright 2016 André Dietrich. All rights reserved.
+ *
+ *  @license This project is released under the MIT-License.
+ *
+ *  @brief Implementation of dynamiC dictionary module.
+ *
+ *
+ */
+
 #include "dynamic.h"
 #include <stdio.h>
 

@@ -1,3 +1,17 @@
+/**
+ *  @file dynamic_list.c
+ *  @author André Dietrich
+ *  @date 14 December 2016
+ *
+ *  @copyright Copyright 2016 André Dietrich. All rights reserved.
+ *
+ *  @license This project is released under the MIT-License.
+ *
+ *  @brief Implementation of dynamiC list module.
+ *
+ *
+ */
+
 #include "dynamic.h"
 
 #define LST_CONT(X)   X->data.list->container

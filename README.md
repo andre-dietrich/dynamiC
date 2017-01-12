@@ -7,6 +7,10 @@ Sets, Dictionaries and others ...
 
 https://ess-ovgu.github.io/dynamiC/
 
+## Source
+
+https://github.com/ESS-OVGU/dynamiC
+
 ## Installation
 
 ```bash
@@ -15,9 +19,9 @@ $ git clone https://github.com/ESS-OVGU/dynamiC
 
 ## Usage
 
-You can either generate a lib with `make lib` for dynamically linking or simply
-include this repository into your project and include it into your Makefile.
-
+You can either generate a `libdynC` with `make lib` for dynamically linking or
+simply include this repository into your project and include it into your
+Makefile.
 
 ### Basic data types
 

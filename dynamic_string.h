@@ -1,11 +1,11 @@
 /**
- *  @file dyn_string.h
+ *  @file dynamic_string.h
  *  @author André Dietrich
  *  @date 14 December 2016
  *
  *  @copyright Copyright 2016 André Dietrich. All rights reserved.
  *
- *  @license This project is released under the BSD-License.
+ *  @license This project is released under the MIT-License.
  *
  *  @brief Definition of C string manipulation functions.
  *

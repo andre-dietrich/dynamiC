@@ -1,17 +1,12 @@
-/****************************************************************************
- * Copyright (C) 2016 by André Dietrich                                     *
- *                                                                          *
- * todo.                                                                    *
- ****************************************************************************/
-
  /**
   * @file dynamic.h
   * @author André Dietrich
   * @date 9 April 2016
   * @brief Dynamic data types as part of the SelectScript-VM implementation.
   *
-  * todo.
-  * @see http://todo
+  * @license MIT
+  *
+  * @see https://ess-ovgu.github.io/dynamiC
   */
 
 #ifndef DYN_C_H

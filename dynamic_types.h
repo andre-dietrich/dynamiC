@@ -5,7 +5,7 @@
  *
  *  @copyright  Copyright 2016 André Dietrich. All rights reserved.
  *
- *  @license    This project is released under the BSD-License.
+ *  @license    This project is released under the MIT-License.
  *
  *  @brief      Definition of internal settings and applied data types.
  *

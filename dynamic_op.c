@@ -1,3 +1,17 @@
+/**
+ *  @file dynamic_op.c
+ *  @author André Dietrich
+ *  @date 14 December 2016
+ *
+ *  @copyright Copyright 2016 André Dietrich. All rights reserved.
+ *
+ *  @license This project is released under the MIT-License.
+ *
+ *  @brief Implementation of dynamiC operations module.
+ *
+ *
+ */
+
 #include "dynamic.h"
 
 #define max_type(A, B) (DYN_TYPE(A) > DYN_TYPE(B)) ? DYN_TYPE(A) : DYN_TYPE(B)

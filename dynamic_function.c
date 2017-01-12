@@ -1,6 +1,18 @@
+/**
+ *  @file dynamic_function.c
+ *  @author André Dietrich
+ *  @date 14 December 2016
+ *
+ *  @copyright Copyright 2016 André Dietrich. All rights reserved.
+ *
+ *  @license This project is released under the MIT-License.
+ *
+ *  @brief Implementation of dynamiC functions/procedures module.
+ *
+ *
+ */
+
 #include "dynamic.h"
-
-
 
 trilean dyn_set_fct(dyn_c* dyn, void *ptr, dyn_byte type, dyn_str info)
 {

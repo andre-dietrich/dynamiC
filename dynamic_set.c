@@ -1,3 +1,17 @@
+/**
+ *  @file dynamic_set.c
+ *  @author André Dietrich
+ *  @date 14 December 2016
+ *
+ *  @copyright Copyright 2016 André Dietrich. All rights reserved.
+ *
+ *  @license This project is released under the MIT-License.
+ *
+ *  @brief Implementation of dynamiC set module as an extension to list.
+ *
+ *
+ */
+
 #include "dynamic.h"
 
 #ifdef S2_SET
