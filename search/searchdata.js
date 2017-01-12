@@ -9,7 +9,7 @@ var indexSectionsWithContent =
   6: "t",
   7: "bdefilmnrst",
   8: "d",
-  9: "d"
+  9: "dm"
 };
 
 var indexSectionNames =
