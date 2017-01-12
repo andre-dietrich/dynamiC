@@ -1,3 +1,0 @@
-# dynamiC
-
-Dynamic type system for C with support for None, Boolean, Integer, Float, List, Sets, Dictionaries and others ...
