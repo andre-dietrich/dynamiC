@@ -63,7 +63,7 @@ typedef enum {
     LIST,               ///< list of type dyn_list
     SET,                ///< set of type dyn_list
     DICT,               ///< dictionary of type dyn_dict
-    TEMP,               ///< not used
+//    TEMP,               ///< not used
     FUNCTION,           ///< function pointer of type dyn_fct
     EXTERN,             ///< void*
     REFERENCE,          ///< dyn_c* for internal usage only
