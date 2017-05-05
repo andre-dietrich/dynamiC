@@ -121,7 +121,7 @@ trilean dyn_list_resize (dyn_c* list, dyn_ushort size)
  *
  * @returns a reference to the element at the end of the list
  */
-dyn_c* dyn_list_push (dyn_c* list, dyn_c* element)
+dyn_c* dyn_list_push (dyn_c* list, const dyn_c* element)
 {
     if (DYN_LIST_LEN(list) == LST_SPACE(list))
         if (!dyn_list_resize(list, list->data.list->space + LIST_DEFAULT))
@@ -193,7 +193,7 @@ trilean dyn_list_remove (dyn_c* list, dyn_ushort i)
  *
  * @retval DYN_TRUE   if the required memory could be allocated
  */
-trilean dyn_list_insert (dyn_c* list, dyn_c* element, dyn_ushort i)
+trilean dyn_list_insert (dyn_c* list, dyn_c* element, const dyn_ushort i)
 {
     dyn_ushort n = DYN_LIST_LEN(list);
     if (n >= i) {
@@ -254,7 +254,7 @@ trilean dyn_list_popi (dyn_c* list, dyn_short i)
  * @retval DYN_TRUE  if the element was found and coppied
  * @retval DYN_FALSE otherwise
  */
-trilean dyn_list_get (dyn_c* list, dyn_c* element, dyn_short i)
+trilean dyn_list_get (const dyn_c* list, dyn_c* element, const dyn_short i)
 {
     dyn_free(element);
     dyn_short len = DYN_LIST_LEN(list);
@@ -282,7 +282,7 @@ trilean dyn_list_get (dyn_c* list, dyn_c* element, dyn_short i)
  *
  * @returns reference to the ith value
  */
-dyn_c* dyn_list_get_ref (dyn_c* list, dyn_short i)
+dyn_c* dyn_list_get_ref (const dyn_c* list, const dyn_short i)
 {
     if (i >= 0 && i<=DYN_LIST_LEN(list))
         return &list->data.list->container[i];
@@ -300,7 +300,7 @@ dyn_c* dyn_list_get_ref (dyn_c* list, dyn_short i)
  * @retval DYN_TRUE  if the element was found and coppied
  * @retval DYN_FALSE otherwise
  */
-trilean dyn_list_copy (dyn_c* list, dyn_c* copy)
+trilean dyn_list_copy (const dyn_c* list, dyn_c* copy)
 {
     dyn_ushort len = DYN_LIST_LEN(list);
 
@@ -325,7 +325,7 @@ trilean dyn_list_copy (dyn_c* list, dyn_c* copy)
  *
  * @returns length of string
  */
-dyn_ushort dyn_list_string_len (dyn_c* list)
+dyn_ushort dyn_list_string_len (const dyn_c* list)
 {
     dyn_ushort size = DYN_LIST_LEN(list)+1;
     dyn_ushort len = 2 + size;
@@ -343,7 +343,7 @@ dyn_ushort dyn_list_string_len (dyn_c* list)
  * @param[in] list input has to be of type LIST
  * @param[in, out] str with added list representation
  */
-void dyn_list_string_add (dyn_c* list, dyn_str str)
+void dyn_list_string_add (const dyn_c* list, dyn_str str)
 {
     dyn_strcat(str, (dyn_str)"[");
     dyn_ushort len = DYN_LIST_LEN(list);

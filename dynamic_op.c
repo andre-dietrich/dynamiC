@@ -32,7 +32,7 @@
     CHECK_NOCOPY_REFERENCE(X2)
 
 
-static dyn_ushort search (dyn_c *container, dyn_c *element)
+static dyn_ushort search (const dyn_c *container, dyn_c *element)
 {
     dyn_ushort i = 0;
 
@@ -506,7 +506,7 @@ trilean dyn_op_pow (dyn_c* dyn1, dyn_c* dyn2)
  *
  * @returns trilean truth value
  */
-trilean dyn_get_bool_3 (dyn_c* dyn)
+trilean dyn_get_bool_3 (const dyn_c* dyn)
 {
     if(DYN_IS_REFERENCE(dyn))
         dyn=dyn->data.ref;

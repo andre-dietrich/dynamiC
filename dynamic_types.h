@@ -104,7 +104,7 @@ struct dynamic {
         dyn_list*   list; //!< pointer to dynamic list
         dyn_dict*   dict; //!< pointer to dynamic dictionary
         dyn_fct*    fct;  //!< pointer to function
-        void*       ex;   //!< external (pointer to everything)
+        const void* ex;   //!< external (pointer to everything)
         dyn_c*      ref;  //!< reference pointer to dynamic elements
                           /*@}*/
     } data;

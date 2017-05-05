@@ -26,7 +26,7 @@
  * @retval DYN_TRUE   if memory for the SET could be allocated
  * @retval DYN_FALSE  otherwise
  */
-trilean dyn_set_set_len (dyn_c* dyn, dyn_ushort len)
+trilean dyn_set_set_len (dyn_c* dyn, const dyn_ushort len)
 {
     if (dyn_set_list_len(dyn, len)) {
         dyn->type = SET;

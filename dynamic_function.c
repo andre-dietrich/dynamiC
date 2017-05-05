@@ -14,7 +14,7 @@
 
 #include "dynamic.h"
 
-trilean dyn_set_fct(dyn_c* dyn, void *ptr, dyn_byte type, dyn_str info)
+trilean dyn_set_fct(dyn_c* dyn, void *ptr, const dyn_byte type, const dyn_str info)
 {
     dyn_free(dyn);
 
@@ -92,7 +92,7 @@ void dyn_fct_free(dyn_c* dyn)
     free(dyn->data.fct);
 }
 
-trilean dyn_fct_copy(dyn_c* dyn, dyn_c* copy)
+trilean dyn_fct_copy(const dyn_c* dyn, dyn_c* copy)
 {
     if (dyn->data.fct->type)
         return dyn_set_fct( copy,
@@ -110,7 +110,7 @@ trilean dyn_fct_copy(dyn_c* dyn, dyn_c* copy)
 }
 
 
-dyn_str dyn_fct_get_ss (dyn_c* dyn)
+dyn_str dyn_fct_get_ss (const dyn_c* dyn)
 {
     return ((dyn_proc*)dyn->data.fct->ptr)->code;
 }

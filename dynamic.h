@@ -46,11 +46,11 @@
           DYN_TYPE(dyn)==REFERENCE || DYN_TYPE(dyn)==REFERENCE2
 
 //! Return type value of a dynamic element @see TYPE
-TYPE       dyn_type            (dyn_c* dyn);
+TYPE       dyn_type            (const dyn_c* dyn);
 //! free allocated memory
 void       dyn_free            (dyn_c* dyn);
 //! Deep copy dynamic element
-trilean    dyn_copy            (dyn_c* dyn,  dyn_c* copy);
+trilean    dyn_copy            (const dyn_c* dyn,  dyn_c* copy);
 //! Move dynamic element to new reference, from is of type NONE afterwards
 void       dyn_move            (dyn_c* from, dyn_c* to);
 /** @brief Reterns the length of an element.
@@ -58,27 +58,27 @@ void       dyn_move            (dyn_c* from, dyn_c* to);
  *  @param[in] dyn value to check
  *  @return length
  */
-dyn_ushort dyn_length          (dyn_c* dyn);
+dyn_ushort dyn_length          (const dyn_c* dyn);
 //! Return the number of allocated bytes
-dyn_uint   dyn_size            (dyn_c* dyn);
+dyn_uint   dyn_size            (const dyn_c* dyn);
 
 //! Set dynamic element to NONE
 void       dyn_set_none        (dyn_c* dyn);
 //! Set dynamic element to BOOL (DYN_TRUE or DYN_FALSE)
-void       dyn_set_bool        (dyn_c* dyn, dyn_char  v);
+void       dyn_set_bool        (dyn_c* dyn, const dyn_char  v);
 //! Set dynamic element to INTEGER
-void       dyn_set_int         (dyn_c* dyn, dyn_int   v);
+void       dyn_set_int         (dyn_c* dyn, const dyn_int   v);
 //! Set dynamic element to FLOAT
-void       dyn_set_float       (dyn_c* dyn, dyn_float v);
+void       dyn_set_float       (dyn_c* dyn, const dyn_float v);
 //! Set dynamic element to point to an arbitrary value
-void       dyn_set_extern      (dyn_c* dyn, void*    v);
+void       dyn_set_extern      (dyn_c* dyn, const void*     v);
 //! Set dynamic element to STRING
-trilean    dyn_set_string      (dyn_c* dyn, char const * v);
+trilean    dyn_set_string      (dyn_c* dyn, const dyn_str   v);
 //! Set dynamic element as reference to another dynamic element
 void       dyn_set_ref         (dyn_c* ref, dyn_c* orig);
 
 //! Return boolean value of an dynamic element
-trilean    dyn_get_bool        (dyn_c* dyn);
+trilean    dyn_get_bool        (const dyn_c* dyn);
 /** @brief Returns the trinary truth value (DYN_TRUE|DYN_FALSE|DYN_NONE) of an
  *         element.
  *
@@ -90,19 +90,19 @@ trilean    dyn_get_bool        (dyn_c* dyn);
  *  @returnval DYN_FALSE ( 0)
  *  @returnval DYN_NONE  (-1)
  */
-trilean    dyn_get_bool_3      (dyn_c* dyn);
+trilean    dyn_get_bool_3      (const dyn_c* dyn);
 //! Return integer value of a dynamic element
-dyn_int    dyn_get_int         (dyn_c* dyn);
+dyn_int    dyn_get_int         (const dyn_c* dyn);
 //! Return float value of a dynamic element
-dyn_float  dyn_get_float       (dyn_c* dyn);
+dyn_float  dyn_get_float       (const dyn_c* dyn);
 //! Return string representation value of a dynamic element
-dyn_str    dyn_get_string      (dyn_c* dyn);
+dyn_str    dyn_get_string      (const dyn_c* dyn);
 //! Return pointer, stored in dyn->data.ex
-void*      dyn_get_extern      (dyn_c* dyn);
+const void* dyn_get_extern     (const dyn_c* dyn);
 //! Add string representation of dynamic element to string
-void       dyn_string_add      (dyn_c* dyn, dyn_str string);
+void       dyn_string_add      (const dyn_c* dyn, dyn_str string);
 //! Calculate length of string representation of dynamic element
-dyn_ushort dyn_string_len      (dyn_c* dyn);
+dyn_ushort dyn_string_len      (const dyn_c* dyn);
 /**@}*/
 
 
@@ -130,31 +130,31 @@ dyn_ushort dyn_string_len      (dyn_c* dyn);
 //! Set dynamic element to list with maximal length
 trilean    dyn_set_list_len    (dyn_c* dyn, dyn_ushort len);
 //! Push new element to the end of a list
-dyn_c*     dyn_list_push       (dyn_c* list, dyn_c* element);
+dyn_c*     dyn_list_push       (dyn_c* list, const dyn_c* element);
 //! Push NONE element to the end of a list
 dyn_c*     dyn_list_push_none  (dyn_c* list);
 //! Pop the last element from the list and move it to param element
 trilean    dyn_list_pop        (dyn_c* list, dyn_c* element);
 //! Copy the ith element of a list to param element
-trilean    dyn_list_get        (dyn_c* list, dyn_c* element, dyn_short i);
+trilean    dyn_list_get        (const dyn_c* list, dyn_c* element, const dyn_short i);
 //! Return a reference to the ith element within list, negative values are allowed
-dyn_c*     dyn_list_get_ref    (dyn_c* list, dyn_short i);
+dyn_c*     dyn_list_get_ref    (const dyn_c* list, const dyn_short i);
 //! Pop i elements from the end of a list
-trilean    dyn_list_popi       (dyn_c* list, dyn_short i);
+trilean    dyn_list_popi       (dyn_c* list, const dyn_short i);
 //! Free the allocated memory of the entire list and set it to NONE
 void       dyn_list_free       (dyn_c* list);
 //! Make a deep copy of the entire list
-trilean    dyn_list_copy       (dyn_c* list, dyn_c* copy);
+trilean    dyn_list_copy       (const dyn_c* list, dyn_c* copy);
 //! Delete the ith element from a list
 trilean    dyn_list_remove     (dyn_c* list, dyn_ushort i);
 //! Insert a new element at the ith position into a list
-trilean    dyn_list_insert     (dyn_c* list, dyn_c* element, dyn_ushort i);
+trilean    dyn_list_insert     (dyn_c* list, dyn_c* element, const dyn_ushort i);
 //! Change the maximal space of a list
-trilean    dyn_list_resize     (dyn_c* list, dyn_ushort size);
+trilean    dyn_list_resize     (dyn_c* list, const dyn_ushort size);
 //! Return the length of the string representation of a list
-dyn_ushort dyn_list_string_len (dyn_c* list);
+dyn_ushort dyn_list_string_len (const dyn_c* list);
 //! Add string representation of a list to str
-void       dyn_list_string_add (dyn_c* list, dyn_str str);
+void       dyn_list_string_add (const dyn_c* list, dyn_str str);
 /**@}*/
 
 
@@ -167,7 +167,7 @@ void       dyn_list_string_add (dyn_c* list, dyn_str str);
  */
 #ifdef S2_SET
 //! Initialize dynamic element as empty set with maximal length
-trilean    dyn_set_set_len     (dyn_c* set, dyn_ushort len);
+trilean    dyn_set_set_len     (dyn_c* set, const dyn_ushort len);
 //! Insert new element into set, if and only if it is not included yet
 trilean    dyn_set_insert      (dyn_c* set, dyn_c* element);
 // Delete element from a set
@@ -195,49 +195,49 @@ trilean    dyn_set_insert      (dyn_c* set, dyn_c* element);
 #define    DYN_DICT_LENGTH(dyn)        dyn->value.data.list->length
 
 //! Set dyn to a dictionary with a max. length of elements
-trilean    dyn_set_dict        (dyn_c* dyn, dyn_ushort length);
+trilean    dyn_set_dict        (dyn_c* dyn, const dyn_ushort length);
 //! Replace the ith element in a dictionary with a new value
-trilean    dyn_dict_change     (dyn_c* dyn, dyn_ushort i, dyn_c *value);
+trilean    dyn_dict_change     (dyn_c* dyn, const dyn_ushort i, const dyn_c *value);
 //! Insert a new key-value pair into the dictionary
-dyn_c*     dyn_dict_insert     (dyn_c* dyn, dyn_str key,  dyn_c *value);
+dyn_c*     dyn_dict_insert     (dyn_c* dyn, const dyn_str key, dyn_c *value);
 //! Remove key-value pair from dictionary
-trilean    dyn_dict_remove     (dyn_c* dyn, dyn_str key);
+trilean    dyn_dict_remove     (dyn_c* dyn, const dyn_str key);
 //! Get the reference to value stored at key
-dyn_c*     dyn_dict_get        (dyn_c* dyn, dyn_str key);
+dyn_c*     dyn_dict_get        (const dyn_c* dyn, const dyn_str key);
 //! Set the loc reference in all procedures (object-oriented)
 trilean    dyn_dict_set_loc    (dyn_c* dyn);
 //! Set the available space for elements
-trilean    dyn_dict_resize     (dyn_c* dyn, dyn_ushort size);
+trilean    dyn_dict_resize     (dyn_c* dyn, const dyn_ushort size);
 
 //! Get the reference to ith value in dict
-dyn_c*     dyn_dict_get_i_ref (dyn_c* dyn, dyn_ushort i);
+dyn_c*     dyn_dict_get_i_ref (const dyn_c* dyn, const dyn_ushort i);
 //! Get the reference to ith key in dict
-dyn_str    dyn_dict_get_i_key (dyn_c* dyn, dyn_ushort i);
+dyn_str    dyn_dict_get_i_key (const dyn_c* dyn, const dyn_ushort i);
 
 //! Check if dict has key and return its position - 1 (returns 0 if not found)
-dyn_ushort dyn_dict_has_key   (dyn_c* dyn, dyn_str key);
+dyn_ushort dyn_dict_has_key   (const dyn_c* dyn, const dyn_str key);
 //! todo
 void       dyn_dict_empty     (dyn_c* dyn);
 //! Free all allocated memory
 void       dyn_dict_free      (dyn_c* dyn);
 //! Copy the entire dict
-trilean    dyn_dict_copy      (dyn_c* dyn, dyn_c* copy);
+trilean    dyn_dict_copy      (const dyn_c* dyn, dyn_c* copy);
 
 //! Calculate the required string length
-dyn_ushort dyn_dict_string_len(dyn_c* dyn);
+dyn_ushort dyn_dict_string_len(const dyn_c* dyn);
 //! Add the dict-string representation to string
-void       dyn_dict_string_add(dyn_c* dyn, dyn_str string);
+void       dyn_dict_string_add(const dyn_c* dyn, dyn_str string);
 /**@}*/
 
 /**
  * \defgroup DynamicFunction
  * @{
  */
-trilean   dyn_set_fct          (dyn_c* dyn, void *ptr, dyn_byte type, dyn_str info);
+trilean   dyn_set_fct          (dyn_c* dyn, void *ptr, const dyn_byte type, const dyn_str info);
 trilean   dyn_set_fct_ss       (dyn_c* dyn, dyn_c* params, dyn_ushort length, dyn_char* code, dyn_str info);
-dyn_str   dyn_fct_get_ss       (dyn_c* dyn);
+dyn_str   dyn_fct_get_ss       (const dyn_c* dyn);
 void      dyn_fct_free         (dyn_c* dyn);
-trilean   dyn_fct_copy         (dyn_c* dyn, dyn_c* copy);
+trilean   dyn_fct_copy         (const dyn_c* dyn, dyn_c* copy);
 /**@}*/
 
 /**

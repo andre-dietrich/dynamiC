@@ -53,7 +53,7 @@ void dyn_free (dyn_c* dyn)
  *
  * @returns a value defined in enumeration TYPE
  */
-TYPE dyn_type (dyn_c* dyn)
+TYPE dyn_type (const dyn_c* dyn)
 {
     return (TYPE)DYN_TYPE(dyn);
 }
@@ -74,7 +74,7 @@ void dyn_set_none (dyn_c* dyn)
  * @param[in, out] dyn element, which is either DYN_TRUE or DYN_FALSE
  * @param[in] v boolean value
  */
-void dyn_set_bool (dyn_c* dyn, dyn_char v)
+void dyn_set_bool (dyn_c* dyn, const dyn_char v)
 {
     dyn_free(dyn);
     dyn->type = BOOL;
@@ -85,7 +85,7 @@ void dyn_set_bool (dyn_c* dyn, dyn_char v)
  * @param[in, out] dyn element, which is set to INTEGER
  * @param[in] v integer value
  */
-void dyn_set_int (dyn_c* dyn, dyn_int v)
+void dyn_set_int (dyn_c* dyn, const dyn_int v)
 {
     dyn_free(dyn);
     dyn->type = INTEGER;
@@ -96,7 +96,7 @@ void dyn_set_int (dyn_c* dyn, dyn_int v)
  * @param[in, out] dyn element, which is set to FLOAT
  * @param[in] v float value
  */
-void dyn_set_float (dyn_c* dyn, dyn_float v)
+void dyn_set_float (dyn_c* dyn, const dyn_float v)
 {
     dyn_free(dyn);
     dyn->type = FLOAT;
@@ -109,7 +109,7 @@ void dyn_set_float (dyn_c* dyn, dyn_float v)
  * @param[in, out] dyn element, which is set to reference the void pointer
  * @param[in] v void value
  */
-void dyn_set_extern (dyn_c* dyn, void* v)
+void dyn_set_extern (dyn_c* dyn, const void * v)
 {
     dyn_free(dyn);
     dyn->type = EXTERN;
@@ -125,7 +125,7 @@ void dyn_set_extern (dyn_c* dyn, void* v)
  * @retval DYN_TRUE if the memory could allocated
  * @retval DYN_FALSE otherwise
  */
-trilean dyn_set_string (dyn_c* dyn, char const * v)
+trilean dyn_set_string (dyn_c* dyn, const dyn_str v)
 {
     dyn_free(dyn);
 
@@ -161,7 +161,7 @@ void dyn_set_ref (dyn_c* ref, dyn_c* orig)
  *
  * @returns size in bytes
  */
-dyn_uint dyn_size (dyn_c* dyn)
+dyn_uint dyn_size (const dyn_c* dyn)
 {
     dyn_uint bytes = sizeof(dyn_c);
 
@@ -239,7 +239,7 @@ dyn_uint dyn_size (dyn_c* dyn)
  *
  * @return DYN_TRUE or DYN_FALSE according to the examples above
  */
-trilean dyn_get_bool (dyn_c* dyn)
+trilean dyn_get_bool (const dyn_c* dyn)
 {
 START:
     switch (DYN_TYPE(dyn)) {
@@ -277,7 +277,7 @@ START:
  *
  * @returns converted integer value
  */
-dyn_int dyn_get_int (dyn_c* dyn)
+dyn_int dyn_get_int (const dyn_c* dyn)
 {
 START:
     switch (DYN_TYPE(dyn)) {
@@ -302,7 +302,7 @@ START:
  *
  * @returns converted float value
  */
-dyn_float dyn_get_float (dyn_c* dyn)
+dyn_float dyn_get_float (const dyn_c* dyn)
 {
 START:
     switch (DYN_TYPE(dyn)) {
@@ -321,7 +321,7 @@ START:
  *
  * @returns void pointer or NULL if a false type was passed
  */
-void* dyn_get_extern (dyn_c* dyn)
+const void* dyn_get_extern (const dyn_c* dyn)
 {
     if (DYN_IS_REFERENCE(dyn))
         dyn = dyn->data.ref;
@@ -343,7 +343,7 @@ void* dyn_get_extern (dyn_c* dyn)
  *
  * @returns pointer to a C-string
  */
-dyn_str dyn_get_string (dyn_c* dyn)
+dyn_str dyn_get_string (const dyn_c* dyn)
 {
     if (DYN_IS_REFERENCE(dyn))
         dyn = dyn->data.ref;
@@ -369,7 +369,7 @@ dyn_str dyn_get_string (dyn_c* dyn)
  *
  * @returns converted float value
  */
-void dyn_string_add (dyn_c* dyn, dyn_str string)
+void dyn_string_add (const dyn_c* dyn, dyn_str string)
 {
 START:
     switch (DYN_TYPE(dyn)) {
@@ -410,7 +410,7 @@ START:
  *
  * @returns length of string representation
  */
-dyn_ushort dyn_string_len (dyn_c* dyn)
+dyn_ushort dyn_string_len (const dyn_c* dyn)
 {
     dyn_ushort len = 0;
 
@@ -446,7 +446,7 @@ START:
  * @retval DYN_TRUE if element could be copied
  * @retval DYN_FALSE otherwise
  */
-trilean dyn_copy (dyn_c* dyn, dyn_c* copy)
+trilean dyn_copy (const dyn_c* dyn, dyn_c* copy)
 {
     switch (DYN_TYPE(dyn)) {
         case STRING:    return dyn_set_string( copy, dyn->data.str );
@@ -499,7 +499,7 @@ void dyn_move (dyn_c* from, dyn_c* to)
  *
  * @returns calculated length
  */
-dyn_ushort dyn_length (dyn_c* dyn)
+dyn_ushort dyn_length (const dyn_c* dyn)
 {
 START:
     switch (DYN_TYPE(dyn)) {
