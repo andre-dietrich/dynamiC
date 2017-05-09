@@ -736,7 +736,7 @@ dyn_char dyn_op_cmp (dyn_c* dyn1, dyn_c* dyn2)
             if (DYN_TYPE(tmp) != DYN_TYPE(dyn2))
                 goto GOTO_TYPE;
             {
-                dyn_c * lset;
+                dyn_c * lset = NULL;
                 dyn_c * rset;
                 if (DYN_LIST_LEN(tmp) == DYN_LIST_LEN(dyn2)){
                     // list might be EQ
