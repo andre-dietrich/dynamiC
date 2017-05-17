@@ -311,6 +311,8 @@ trilean dyn_op_xor(dyn_c *dyn1, dyn_c *dyn2);
 //! Logical (trinary) Negation
 trilean dyn_op_not(dyn_c *dyn);
 
+//! Type and Value Equality
+trilean dyn_op_id (dyn_c *dyn1, dyn_c *dyn2);
 //! Relational Equality
 trilean dyn_op_eq (dyn_c *dyn1, dyn_c *dyn2);
 //! Relational Not Equal

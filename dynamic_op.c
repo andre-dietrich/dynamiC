@@ -49,7 +49,7 @@ static dyn_ushort search (const dyn_c *container, dyn_c *element)
             DYN_INIT(&tmp);
             for (; i<DYN_LIST_LEN(container); ++i) {
                 dyn_set_ref(&tmp, DYN_LIST_GET_REF(container, i));
-                dyn_op_eq(&tmp, element);
+                dyn_op_id(&tmp, element);
 
                 if (dyn_get_bool(&tmp))
                     return ++i;
@@ -820,6 +820,22 @@ GOTO_RET:
     //dyn_set_int(dyn1, ret);
     return ret;
 
+}
+
+/**
+ * @param[in, out] dyn1 in and output parameter
+ * @param[in]      dyn2 exponent value
+ *
+ * @returns DYN_TRUE, can be performed onto any combination of types
+ */
+trilean dyn_op_id (dyn_c* dyn1, dyn_c* dyn2)
+{
+    if( DYN_TYPE(DYN_IS_REFERENCE(dyn1) ? dyn1->data.ref : dyn1) ==
+        DYN_TYPE(DYN_IS_REFERENCE(dyn2) ? dyn2->data.ref : dyn2) )
+      dyn_op_eq(dyn1, dyn2);
+    else
+      dyn_set_bool(dyn1, DYN_FALSE);
+    return DYN_TRUE;
 }
 
 /**
