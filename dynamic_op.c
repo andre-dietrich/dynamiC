@@ -682,10 +682,10 @@ trilean dyn_op_not (dyn_c* dyn)
  */
 dyn_char dyn_op_cmp (dyn_c* dyn1, dyn_c* dyn2)
 {
-    enum{EQ,LT,GT,NEQ,TYPE,MARK=0xff};//0,1,2,3,4
+    enum{EQ,LT,GT,NEQ,TYPE,MARK};//0,1,2,3,4
 
     dyn_c  *tmp = DYN_IS_REFERENCE(dyn1) ? dyn1->data.ref : dyn1;
-    dyn_ushort ret;
+    dyn_char ret;
     dyn_c tmp2;
     DYN_INIT(&tmp2);
     dyn_ushort i;
@@ -725,10 +725,13 @@ dyn_char dyn_op_cmp (dyn_c* dyn1, dyn_c* dyn2)
         case STRING: {
             if (DYN_TYPE(tmp) != DYN_TYPE(dyn2))
                 goto GOTO_TYPE;
-            i = dyn_strcmp(tmp->data.str, dyn2->data.str);
-            if (i < 0)
+            //i = dyn_strcmp(tmp->data.str, dyn2->data.str);
+            //if (i < 0)
+            ret = dyn_strcmp(tmp->data.str, dyn2->data.str);
+            if (ret < 0)
                 goto GOTO_LT;
-            if (i > 0)
+            //if (i > 0)
+            if (ret > 0)
                 goto GOTO_GT;
             goto GOTO_EQ;
         }
@@ -743,12 +746,12 @@ dyn_char dyn_op_cmp (dyn_c* dyn1, dyn_c* dyn2)
                     ret = EQ;
                     lset = tmp;
                     rset = dyn2;
-                } else if (DYN_LIST_LEN(tmp) < DYN_LIST_LEN(dyn2)){
+                } else if (DYN_LIST_LEN(tmp) < DYN_LIST_LEN(dyn2)) {
                     // list might be EQ
                     ret = LT;
                     lset = tmp;
                     rset = dyn2;
-                } else if (DYN_LIST_LEN(tmp) > DYN_LIST_LEN(dyn2)){
+                } else /*if (DYN_LIST_LEN(tmp) > DYN_LIST_LEN(dyn2)) */{
                     // list might be GT
                     ret = GT;
                     lset = dyn2;

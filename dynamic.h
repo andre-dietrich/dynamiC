@@ -73,7 +73,7 @@ void       dyn_set_float       (dyn_c* dyn, const dyn_float v);
 //! Set dynamic element to point to an arbitrary value
 void       dyn_set_extern      (dyn_c* dyn, const void*     v);
 //! Set dynamic element to STRING
-trilean    dyn_set_string      (dyn_c* dyn, const dyn_str   v);
+trilean    dyn_set_string      (dyn_c* dyn, dyn_const_str   v);
 //! Set dynamic element as reference to another dynamic element
 void       dyn_set_ref         (dyn_c* ref, dyn_c* orig);
 
@@ -199,11 +199,11 @@ trilean    dyn_set_dict        (dyn_c* dyn, const dyn_ushort length);
 //! Replace the ith element in a dictionary with a new value
 trilean    dyn_dict_change     (dyn_c* dyn, const dyn_ushort i, const dyn_c *value);
 //! Insert a new key-value pair into the dictionary
-dyn_c*     dyn_dict_insert     (dyn_c* dyn, const dyn_str key, dyn_c *value);
+dyn_c*     dyn_dict_insert     (dyn_c* dyn, dyn_const_str key, dyn_c *value);
 //! Remove key-value pair from dictionary
-trilean    dyn_dict_remove     (dyn_c* dyn, const dyn_str key);
+trilean    dyn_dict_remove     (dyn_c* dyn, dyn_const_str key);
 //! Get the reference to value stored at key
-dyn_c*     dyn_dict_get        (const dyn_c* dyn, const dyn_str key);
+dyn_c*     dyn_dict_get        (const dyn_c* dyn, dyn_const_str key);
 //! Set the loc reference in all procedures (object-oriented)
 trilean    dyn_dict_set_loc    (dyn_c* dyn);
 //! Set the available space for elements
@@ -215,7 +215,7 @@ dyn_c*     dyn_dict_get_i_ref (const dyn_c* dyn, const dyn_ushort i);
 dyn_str    dyn_dict_get_i_key (const dyn_c* dyn, const dyn_ushort i);
 
 //! Check if dict has key and return its position - 1 (returns 0 if not found)
-dyn_ushort dyn_dict_has_key   (const dyn_c* dyn, const dyn_str key);
+dyn_ushort dyn_dict_has_key   (const dyn_c* dyn, dyn_const_str key);
 //! todo
 void       dyn_dict_empty     (dyn_c* dyn);
 //! Free all allocated memory
@@ -233,8 +233,8 @@ void       dyn_dict_string_add(const dyn_c* dyn, dyn_str string);
  * \defgroup DynamicFunction
  * @{
  */
-trilean   dyn_set_fct          (dyn_c* dyn, void *ptr, const dyn_byte type, const dyn_str info);
-trilean   dyn_set_fct_ss       (dyn_c* dyn, dyn_c* params, dyn_ushort length, dyn_char* code, dyn_str info);
+trilean   dyn_set_fct          (dyn_c* dyn, void *ptr, const dyn_byte type, dyn_const_str info);
+trilean   dyn_set_fct_ss       (dyn_c* dyn, dyn_c* params, dyn_ushort length, dyn_char* code, dyn_const_str info);
 dyn_str   dyn_fct_get_ss       (const dyn_c* dyn);
 void      dyn_fct_free         (dyn_c* dyn);
 trilean   dyn_fct_copy         (const dyn_c* dyn, dyn_c* copy);

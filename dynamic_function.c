@@ -14,7 +14,7 @@
 
 #include "dynamic.h"
 
-trilean dyn_set_fct(dyn_c* dyn, void *ptr, const dyn_byte type, const dyn_str info)
+trilean dyn_set_fct(dyn_c* dyn, void *ptr, const dyn_byte type, dyn_const_str info)
 {
     dyn_free(dyn);
 
@@ -46,7 +46,7 @@ trilean dyn_set_fct(dyn_c* dyn, void *ptr, const dyn_byte type, const dyn_str in
 
 trilean dyn_set_fct_ss(dyn_c* dyn, dyn_c* params,
                      dyn_ushort length, dyn_char* code,
-                     dyn_str info)
+                     dyn_const_str info)
 {
     if( dyn_set_fct(dyn, NULL, 0, info) ) {
         dyn_proc *proc = (dyn_proc*) malloc(sizeof(dyn_proc));

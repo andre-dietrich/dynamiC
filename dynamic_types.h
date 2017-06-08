@@ -34,6 +34,10 @@ typedef unsigned char dyn_byte;
 /** @brief Standard dynamic C string
  */
 typedef char*         dyn_str;
+/** @brief Standard dynamic C const string
+ */
+typedef const char*   dyn_const_str;
+
 /** @brief 16bit unsigned integer
  */
 typedef uint16_t      dyn_ushort;

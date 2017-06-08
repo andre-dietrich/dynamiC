@@ -64,7 +64,7 @@ trilean dyn_set_dict (dyn_c* dyn, dyn_ushort length)
  * @returns reference to the newly inserted value, if insertion was not
  * possible, NULL is returned
  */
-dyn_c* dyn_dict_insert(dyn_c* dyn, const dyn_str key, dyn_c* value)
+dyn_c* dyn_dict_insert(dyn_c* dyn, dyn_const_str key, dyn_c* value)
 {
     dyn_dict* dict = dyn->data.dict;
     dyn_ushort space = DYN_DICT_SPACE(dict);
@@ -144,7 +144,7 @@ trilean dyn_dict_change (dyn_c* dyn, const dyn_ushort i, const dyn_c* value)
  * @retval 0 if the key was not found
  * @retval position+1 otherwise
  */
-dyn_ushort dyn_dict_has_key (const dyn_c* dyn, const dyn_str key)
+dyn_ushort dyn_dict_has_key (const dyn_c* dyn, dyn_const_str key)
 {
     dyn_char** s_key = dyn->data.dict->key;
     dyn_ushort length = DYN_DICT_LENGTH(dyn->data.dict);
@@ -198,7 +198,7 @@ dyn_str dyn_dict_get_i_key (const dyn_c* dyn, const dyn_ushort i)
  * @retval DYN_TRUE   if the key value pair was found and removed
  * @retval DYN_FALSE  otherwise
  */
-trilean dyn_dict_remove (dyn_c* dyn, const dyn_str key)
+trilean dyn_dict_remove (dyn_c* dyn, dyn_const_str key)
 {
     dyn_dict* dict = dyn->data.dict;
     dyn_ushort i = dyn_dict_has_key(dyn, key);
@@ -263,7 +263,7 @@ void dyn_dict_free (dyn_c* dyn)
  * @returns reference to the value stored under the given key, if exists,
  *          otherwise NULL
  */
-dyn_c* dyn_dict_get (const dyn_c* dyn, const dyn_str key)
+dyn_c* dyn_dict_get (const dyn_c* dyn, dyn_const_str key)
 {
     dyn_ushort pos = dyn_dict_has_key(dyn, key);
 

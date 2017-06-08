@@ -125,7 +125,7 @@ void dyn_set_extern (dyn_c* dyn, const void * v)
  * @retval DYN_TRUE if the memory could allocated
  * @retval DYN_FALSE otherwise
  */
-trilean dyn_set_string (dyn_c* dyn, const dyn_str v)
+trilean dyn_set_string (dyn_c* dyn, dyn_const_str v)
 {
     dyn_free(dyn);
 

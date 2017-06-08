@@ -24,7 +24,7 @@
  *
  *  @return string length
  */
-dyn_ushort dyn_strlen(dyn_str str)
+dyn_ushort dyn_strlen(dyn_const_str str)
 {
     dyn_ushort len = 0;
 
@@ -51,7 +51,7 @@ dyn_ushort dyn_strlen(dyn_str str)
  *  @param source       C string to be appended. This should not overlap
  *                      destination.
  */
-void dyn_strcat(dyn_str destination, dyn_str source)
+void dyn_strcat(dyn_str destination, dyn_const_str source)
 {
     dyn_strcpy(&destination[dyn_strlen(destination)], source);
 }
@@ -73,7 +73,7 @@ void dyn_strcat(dyn_str destination, dyn_str source)
  *  @param source       C string to be appended. This should not overlap
  *                      destination.
  */
-void dyn_strcat2(dyn_str destination, dyn_str source)
+void dyn_strcat2(dyn_str destination, dyn_const_str source)
 {
     destination = (dyn_str) realloc(destination, dyn_strlen(destination)+dyn_strlen(source)+1);
     dyn_strcat(destination, source);
@@ -91,7 +91,7 @@ void dyn_strcat2(dyn_str destination, dyn_str source)
  *                           is to be copied.
  *  @param [in]  source      C string to be copied.
  */
-void dyn_strcpy (dyn_str destination, dyn_str source)
+void dyn_strcpy (dyn_str destination, dyn_const_str source)
 {
     while(*source)
         *destination++=*source++;
@@ -159,7 +159,7 @@ void dyn_itoa (dyn_str str, dyn_int i)
  *  @param f  float value to check
  *  @returns  string length
  */
-dyn_ushort dyn_ftoa_len (dyn_float f)
+dyn_ushort dyn_ftoa_len (const dyn_float f)
 {
     dyn_ushort len = 1;
 
@@ -182,7 +182,7 @@ dyn_ushort dyn_ftoa_len (dyn_float f)
  *  @param [out] str character array with with new ASCII representation of f
  *  @param [in]  f   float value to convert
  */
-void dyn_ftoa (dyn_str str, dyn_float f)
+void dyn_ftoa (dyn_str str, const dyn_float f)
 {
     dyn_int a = (dyn_int) f;
     dyn_int b = (dyn_int) ((f - a) * FLOAT_DIGITS);
@@ -209,7 +209,7 @@ void dyn_ftoa (dyn_str str, dyn_float f)
  *  @retval >0	the first character that does not match has a greater value in a
  *              than in b
  */
-dyn_char dyn_strcmp(dyn_str a, dyn_str b)
+dyn_char dyn_strcmp(dyn_const_str a, dyn_const_str b)
 {
     while (*a == *b++) {
         if (*a++ == 0)
