@@ -165,20 +165,20 @@ dyn_uint dyn_size (const dyn_c* dyn)
 {
     dyn_uint bytes = sizeof(dyn_c);
 
+    dyn_ushort len, i = 0;
+
     switch (DYN_TYPE(dyn)) {
-        case STRING: {
+        case STRING:
             bytes += dyn_strlen(dyn->data.str)+1;
             break;
-        }
 #ifdef S2_SET
         case SET:
 #endif
         case LIST: {
             bytes += sizeof(dyn_list);
 
-            dyn_ushort len = dyn->data.list->space;
-            dyn_ushort i;
-            for (i=0; i<len; ++i)
+            len = dyn->data.list->space;
+            for (; i<len; ++i)
                 bytes += dyn_size( DYN_LIST_GET_REF(dyn, i) );
 
             break;
@@ -187,19 +187,18 @@ dyn_uint dyn_size (const dyn_c* dyn)
             bytes += sizeof(dyn_dict);
             bytes += dyn_size(&dyn->data.dict->value);
 
-            dyn_ushort len = dyn->data.dict->value.data.list->space;
-            dyn_ushort i;
-            for (i=0; i<len; ++i) {
+            len = dyn->data.dict->value.data.list->space;
+            for (; i<len; ++i) {
                 if (dyn->data.dict->key[i])
                     bytes += dyn_strlen(dyn->data.dict->key[i]);
-                bytes += 1;
+                bytes++;
             }
 
             break;
         }
         case FUNCTION: {
             bytes += sizeof(dyn_fct);
-            bytes += dyn_strlen(dyn->data.fct->info)+1;
+            bytes += dyn_strlen(dyn->data.fct->info) + 1;
             break;
         }
     }
@@ -253,7 +252,7 @@ START:
 #endif
         case LIST:
         case DICT:
-                        return dyn_length(dyn) ? DYN_TRUE : DYN_FALSE;
+                        return dyn_length(dyn);// ? DYN_TRUE : DYN_FALSE;
         case REFERENCE2:
         case REFERENCE: dyn=dyn->data.ref;
                         goto START;
@@ -281,7 +280,7 @@ dyn_int dyn_get_int (const dyn_c* dyn)
 {
 START:
     switch (DYN_TYPE(dyn)) {
-        case BOOL:      return dyn->data.b ? 1 : 0;
+        case BOOL:      //return dyn->data.b ? 1 : 0;
         case INTEGER:   return dyn->data.i;
         case FLOAT:     return (dyn_int)dyn->data.f;
         case REFERENCE2:
@@ -306,7 +305,7 @@ dyn_float dyn_get_float (const dyn_c* dyn)
 {
 START:
     switch (DYN_TYPE(dyn)) {
-        case BOOL:      return dyn->data.b ? 1 : 0;
+        case BOOL:      return (dyn_float)dyn->data.b;
         case INTEGER:   return (dyn_float)dyn->data.i;
         case FLOAT:     return dyn->data.f;
         case REFERENCE2:
@@ -373,35 +372,45 @@ void dyn_string_add (const dyn_c* dyn, dyn_str string)
 {
 START:
     switch (DYN_TYPE(dyn)) {
-        case BOOL:      dyn_strcat(string, dyn->data.b ? (dyn_str)"1": (dyn_str)"0");
-                        break;
-        case INTEGER:   dyn_itoa(&string[dyn_strlen(string)], dyn->data.i);
-                        break;
-        case FLOAT:     dyn_ftoa(&string[dyn_strlen(string)], dyn->data.f);
-                        break;
-        case STRING:    dyn_strcat(string, dyn->data.str);
-                        break;
-        case EXTERN:    dyn_strcat(string, (dyn_str)"ex");
-                        //dyn_itoa(&string[dyn_strlen(string)], *((dyn_int*) dyn->data.ex));
-                        break;
-        case FUNCTION:  dyn_strcat(string, (dyn_str)"FCT");
-                        break;
-        case LIST:      dyn_list_string_add(dyn, string);
-                        break;
+        case BOOL:
+            dyn_strcat(string, dyn->data.b ? "1": "0");
+            return;
+        case INTEGER:
+            dyn_itoa(&string[dyn_strlen(string)], dyn->data.i);
+            return;
+        case FLOAT:
+            dyn_ftoa(&string[dyn_strlen(string)], dyn->data.f);
+            return;
+        case STRING:
+            dyn_strcat(string, dyn->data.str);
+            return;
+        case EXTERN:
+            dyn_strcat(string, "ex");
+            return;
+        case FUNCTION:
+            dyn_strcat(string, "FCT");
+            return;
+        case LIST:
+            dyn_list_string_add(dyn, string);
+            return;
 #ifdef S2_SET
-        case SET: {     dyn_uint i = dyn_strlen(string);
-                        dyn_list_string_add(dyn, string);
-                        string[i] = '{';
-                        string[dyn_strlen(string)-1] = '}';
-                        break;
+        case SET: {
+            dyn_uint i = dyn_strlen(string);
+            dyn_list_string_add(dyn, string);
+            string[i] = '{';
+            string[dyn_strlen(string)-1] = '}';
+            return;
         }
 #endif
-        case DICT:      dyn_dict_string_add (dyn, string);
-                        break;
+        case DICT:
+            dyn_dict_string_add (dyn, string);
+            return;
         case REFERENCE2:
-        case REFERENCE: dyn=dyn->data.ref;
-                        goto START;
-        case MISCELLANEOUS: dyn_strcat(string, (dyn_str)"$");
+        case REFERENCE:
+            dyn=dyn->data.ref;
+            goto START;
+        case MISCELLANEOUS:
+            dyn_strcat(string, "$");
     }
 }
 
@@ -412,29 +421,25 @@ START:
  */
 dyn_ushort dyn_string_len (const dyn_c* dyn)
 {
-    dyn_ushort len = 0;
-
 START:
-
     switch (DYN_TYPE(dyn)) {
-        case MISCELLANEOUS:
-        case BOOL:      len = 1;                        break;
-        case INTEGER:   len = dyn_itoa_len(dyn->data.i); break;
-        case FLOAT:     len = dyn_ftoa_len(dyn->data.f); break;
-        case EXTERN:    len = 2; // + dyn_itoa_len(*((dyn_int*) dyn->data.ex));
-                        break;
-        case FUNCTION:  len = 3;                        break;
-        case STRING:    len = dyn_strlen(dyn->data.str); break;
-#ifdef S2_SET
-        case SET:
-#endif
-        case LIST:      len = dyn_list_string_len(dyn); break;
-        case DICT:      len = dyn_dict_string_len(dyn); break;
         case REFERENCE2:
         case REFERENCE: dyn=dyn->data.ref;
                         goto START;
+        case MISCELLANEOUS:
+        case BOOL:      return 1;
+        case INTEGER:   return dyn_itoa_len(dyn->data.i);
+        case FLOAT:     return dyn_ftoa_len(dyn->data.f);
+        case EXTERN:    return 2;
+        case FUNCTION:  return 3;
+        case STRING:    return dyn_strlen(dyn->data.str);
+#ifdef S2_SET
+        case SET:
+#endif
+        case LIST:      return dyn_list_string_len(dyn);
+        case DICT:      return dyn_dict_string_len(dyn);
     }
-    return len;
+    return 0;
 }
 
 /**

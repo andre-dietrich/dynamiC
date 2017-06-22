@@ -195,38 +195,38 @@ trilean    dyn_set_insert      (dyn_c* set, dyn_c* element);
 #define    DYN_DICT_LENGTH(dyn)        dyn->value.data.list->length
 
 //! Set dyn to a dictionary with a max. length of elements
-trilean    dyn_set_dict        (dyn_c* dyn, const dyn_ushort length);
+trilean    dyn_set_dict        (dyn_c* dyn,  const dyn_ushort length);
 //! Replace the ith element in a dictionary with a new value
-trilean    dyn_dict_change     (dyn_c* dyn, const dyn_ushort i, const dyn_c *value);
+trilean    dyn_dict_change     (dyn_c* dict, const dyn_ushort i, const dyn_c *value);
 //! Insert a new key-value pair into the dictionary
-dyn_c*     dyn_dict_insert     (dyn_c* dyn, dyn_const_str key, dyn_c *value);
+dyn_c*     dyn_dict_insert     (dyn_c* dict, dyn_const_str key, dyn_c *value);
 //! Remove key-value pair from dictionary
-trilean    dyn_dict_remove     (dyn_c* dyn, dyn_const_str key);
+trilean    dyn_dict_remove     (dyn_c* dict, dyn_const_str key);
 //! Get the reference to value stored at key
-dyn_c*     dyn_dict_get        (const dyn_c* dyn, dyn_const_str key);
+dyn_c*     dyn_dict_get        (const dyn_c* dict, dyn_const_str key);
 //! Set the loc reference in all procedures (object-oriented)
-trilean    dyn_dict_set_loc    (dyn_c* dyn);
+trilean    dyn_dict_set_loc    (dyn_c* dict);
 //! Set the available space for elements
-trilean    dyn_dict_resize     (dyn_c* dyn, const dyn_ushort size);
+trilean    dyn_dict_resize     (dyn_c* dict, const dyn_ushort size);
 
 //! Get the reference to ith value in dict
-dyn_c*     dyn_dict_get_i_ref (const dyn_c* dyn, const dyn_ushort i);
+dyn_c*     dyn_dict_get_i_ref (const dyn_c* dict, const dyn_ushort i);
 //! Get the reference to ith key in dict
-dyn_str    dyn_dict_get_i_key (const dyn_c* dyn, const dyn_ushort i);
+dyn_str    dyn_dict_get_i_key (const dyn_c* dict, const dyn_ushort i);
 
 //! Check if dict has key and return its position - 1 (returns 0 if not found)
-dyn_ushort dyn_dict_has_key   (const dyn_c* dyn, dyn_const_str key);
+dyn_ushort dyn_dict_has_key   (const dyn_c* dict, dyn_const_str key);
 //! todo
-void       dyn_dict_empty     (dyn_c* dyn);
+void       dyn_dict_empty     (dyn_c* dict);
 //! Free all allocated memory
-void       dyn_dict_free      (dyn_c* dyn);
+void       dyn_dict_free      (dyn_c* dict);
 //! Copy the entire dict
-trilean    dyn_dict_copy      (const dyn_c* dyn, dyn_c* copy);
+trilean    dyn_dict_copy      (const dyn_c* dict, dyn_c* copy);
 
 //! Calculate the required string length
-dyn_ushort dyn_dict_string_len(const dyn_c* dyn);
+dyn_ushort dyn_dict_string_len(const dyn_c* dict);
 //! Add the dict-string representation to string
-void       dyn_dict_string_add(const dyn_c* dyn, dyn_str string);
+void       dyn_dict_string_add(const dyn_c* dict, dyn_str string);
 /**@}*/
 
 /**

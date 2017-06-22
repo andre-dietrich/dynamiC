@@ -38,25 +38,25 @@ trilean dyn_set_list_len (dyn_c* dyn, dyn_ushort len)
 {
     dyn_free(dyn);
 
-    dyn->data.list = (dyn_list*) malloc(sizeof(dyn_list));
+    dyn_list *list = (dyn_list*) malloc(sizeof(dyn_list));
 
-    if (dyn->data.list) {
+    if (list) {
 
-        dyn->data.list->container = (dyn_c*) malloc(len * sizeof(dyn_c));
+        list->container = (dyn_c*) malloc(len * sizeof(dyn_c));
 
-        if (dyn->data.list->container) {
-            dyn->type = LIST;
-
-            dyn->data.list->space = len;
-            dyn->data.list->length = 0;
+        if (list->container) {
+            list->space = len;
+            list->length = 0;
 
             // Initialize all elements in list with NONE
             while (len--)
-                DYN_INIT(&dyn->data.list->container[len]);
+                DYN_INIT(&list->container[len]);
 
+            dyn->type = LIST;
+            dyn->data.list = list;
             return DYN_TRUE;
         }
-        free(dyn->data.list);
+        free(list);
     }
     return DYN_FALSE;
 }
@@ -64,18 +64,18 @@ trilean dyn_set_list_len (dyn_c* dyn, dyn_ushort len)
 /**
  * @param[in, out] list  input put has to be a list
  */
-void dyn_list_free (dyn_c* list)
+void dyn_list_free (dyn_c* dyn)
 {
-    dyn_ushort len = DYN_LIST_LEN(list);
+    dyn_ushort len = DYN_LIST_LEN(dyn);
 
     // free all elements within the allocated container element
-    dyn_c *ptr = list->data.list->container;
+    dyn_c *ptr = dyn->data.list->container;
     while (len--) {
         dyn_free(ptr++);
     }
 
-    free(list->data.list->container);
-    free(list->data.list);
+    free(dyn->data.list->container);
+    free(dyn->data.list);
 }
 
 /**
@@ -90,20 +90,20 @@ void dyn_list_free (dyn_c* list)
  */
 trilean dyn_list_resize (dyn_c* list, dyn_ushort size)
 {
-    dyn_ushort i;
-//    dyn_ushort len = dyn_length(list);
+    dyn_list *ptr = list->data.list;
 
-    dyn_c* new_list = (dyn_c*) realloc(list->data.list->container, size * sizeof(dyn_c));
+    dyn_c* new_list = (dyn_c*) realloc(ptr->container, size * sizeof(dyn_c));
 
     if (new_list) {
-        list->data.list->container = new_list;
+        ptr->container = new_list;
 
-        if (list->data.list->space < size) {
-            for(i=DYN_LIST_LEN(list); i<size; ++i)
-                DYN_INIT(&list->data.list->container[i]);
+        if (ptr->space < size) {
+            dyn_ushort i = ptr->length;
+            for(; i<size; ++i)
+                DYN_INIT(&ptr->container[i]);
         }
 
-        list->data.list->space = size;
+        ptr->space = size;
         return DYN_TRUE;
     }
 
@@ -123,13 +123,15 @@ trilean dyn_list_resize (dyn_c* list, dyn_ushort size)
  */
 dyn_c* dyn_list_push (dyn_c* list, const dyn_c* element)
 {
-    if (DYN_LIST_LEN(list) == LST_SPACE(list))
-        if (!dyn_list_resize(list, list->data.list->space + LIST_DEFAULT))
+    dyn_list *ptr = list->data.list;
+
+    if (ptr->length == ptr->space)
+        if (!dyn_list_resize(list, ptr->space + LIST_DEFAULT))
             return NULL;
 
-    dyn_copy(element, &list->data.list->container[ list->data.list->length++ ]);
+    dyn_copy(element, &ptr->container[ ptr->length++ ]);
 
-    return &list->data.list->container[ list->data.list->length-1 ];
+    return &ptr->container[ ptr->length-1 ];
 }
 
 /**
@@ -143,11 +145,12 @@ dyn_c* dyn_list_push (dyn_c* list, const dyn_c* element)
  */
 dyn_c* dyn_list_push_none (dyn_c* list)
 {
-    if (DYN_LIST_LEN(list) == LST_SPACE(list))
-        if (!dyn_list_resize(list, list->data.list->space + LIST_DEFAULT))
+    dyn_list *ptr = list->data.list;
+    if (ptr->length == ptr->space)
+        if (!dyn_list_resize(list, ptr->space + LIST_DEFAULT))
             return NULL;
 
-    return &list->data.list->container[ list->data.list->length++ ];
+    return &ptr->container[ ptr->length++ ];
 }
 
 /**
@@ -168,10 +171,10 @@ dyn_c* dyn_list_push_none (dyn_c* list)
  */
 trilean dyn_list_remove (dyn_c* list, dyn_ushort i)
 {
-    if (DYN_LIST_LEN(list) > i) {
-        for(;i<DYN_LIST_LEN(list)-1; ++i) {
-            dyn_move(DYN_LIST_GET_REF(list, i+1),
-                     DYN_LIST_GET_REF(list, i));
+    dyn_list *ptr = list->data.list;
+    if (ptr->length > i) {
+        for(; i<ptr->length-1; ++i) {
+            dyn_move(&ptr->container[i+1], &ptr->container[i]);
         }
         dyn_list_popi(list, 1);
     }
@@ -198,11 +201,14 @@ trilean dyn_list_insert (dyn_c* list, dyn_c* element, const dyn_ushort i)
     dyn_ushort n = DYN_LIST_LEN(list);
     if (n >= i) {
         dyn_list_push_none(list);
+
+        dyn_c *ptr = list->data.list->container;
+
         ++n;
-        while(--n > i) {
-            dyn_move(DYN_LIST_GET_REF(list, n-1), DYN_LIST_GET_REF(list, n));
-        }
-        dyn_move(element, DYN_LIST_GET_REF(list, i));
+        while(--n > i)
+            dyn_move(&ptr[n-1], &ptr[n]);
+
+        dyn_move(element, &ptr[i]);
     }
     return DYN_TRUE;
 }
@@ -218,11 +224,12 @@ trilean dyn_list_insert (dyn_c* list, dyn_c* element, const dyn_ushort i)
  */
 trilean dyn_list_pop(dyn_c* list, dyn_c* element)
 {
-    dyn_move(DYN_LIST_GET_END(list), element);
-    list->data.list->length--;
+    dyn_list *ptr = list->data.list;
 
-    if (LST_SPACE(list) - DYN_LIST_LEN(list) > LIST_DEFAULT)
-        if (!dyn_list_resize(list, list->data.list->space - LIST_DEFAULT))
+    dyn_move(&ptr->container[--ptr->length], element);
+
+    if (ptr->space - ptr->length > LIST_DEFAULT)
+        if (!dyn_list_resize(list, ptr->space - LIST_DEFAULT))
             return DYN_FALSE;
 
     return DYN_TRUE;
@@ -257,14 +264,11 @@ trilean dyn_list_popi (dyn_c* list, dyn_short i)
 trilean dyn_list_get (const dyn_c* list, dyn_c* element, const dyn_short i)
 {
     dyn_free(element);
-    dyn_short len = DYN_LIST_LEN(list);
 
-    if (i >= 0) {
-        if (i <= len) {
-            return dyn_copy(&list->data.list->container[ i ], element);
-        }
-    } else if ( -i <= len ) {
-        return dyn_copy(&list->data.list->container[ len+i ], element);
+    dyn_c* ptr = dyn_list_get_ref(list, i);
+
+    if (ptr) {
+        return dyn_copy(ptr, element);
     }
 
     return DYN_FALSE;
@@ -284,10 +288,11 @@ trilean dyn_list_get (const dyn_c* list, dyn_c* element, const dyn_short i)
  */
 dyn_c* dyn_list_get_ref (const dyn_c* list, const dyn_short i)
 {
-    if (i >= 0 && i<=DYN_LIST_LEN(list))
-        return &list->data.list->container[i];
-    else if (i < 0 && -i <= DYN_LIST_LEN(list))
-        return &list->data.list->container[ DYN_LIST_LEN(list)+i ];
+    dyn_list *ptr = list->data.list;
+    if (i >= 0 && i<= ptr->length)
+        return &ptr->container[i];
+    else if (i < 0 && -i <= ptr->length)
+        return &ptr->container[ ptr->length+i ];
     return NULL;
 }
 
@@ -345,18 +350,18 @@ dyn_ushort dyn_list_string_len (const dyn_c* list)
  */
 void dyn_list_string_add (const dyn_c* list, dyn_str str)
 {
-    dyn_strcat(str, (dyn_str)"[");
+    dyn_strcat(str, "[");
     dyn_ushort len = DYN_LIST_LEN(list);
 
     if (len == 0) {
-        dyn_strcat(str, (dyn_str)"]");
+        dyn_strcat(str, "]");
         return;
     }
 
     dyn_ushort i;
     for (i=0; i<len; i++) {
         dyn_string_add(DYN_LIST_GET_REF(list, i), str);
-        dyn_strcat(str, (dyn_str)",");
+        dyn_strcat(str, ",");
     }
     str[dyn_strlen(str)-1] = ']';
 }
