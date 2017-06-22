@@ -233,7 +233,12 @@ void       dyn_dict_string_add(const dyn_c* dyn, dyn_str string);
  * \defgroup DynamicFunction
  * @{
  */
-trilean   dyn_set_fct          (dyn_c* dyn, void *ptr, const dyn_byte type, dyn_const_str info);
+
+#define   DYN_FCT_C     0
+#define   DYN_FCT_SYS   1
+#define   DYN_FCT_PROC  2
+
+trilean   dyn_set_fct          (dyn_c* dyn, void *ptr, const dyn_ushort type, dyn_const_str info);
 trilean   dyn_set_fct_ss       (dyn_c* dyn, dyn_c* params, dyn_ushort length, dyn_char* code, dyn_const_str info);
 dyn_str   dyn_fct_get_ss       (const dyn_c* dyn);
 void      dyn_fct_free         (dyn_c* dyn);

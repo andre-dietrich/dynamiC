@@ -14,7 +14,7 @@
 
 #include "dynamic.h"
 
-trilean dyn_set_fct(dyn_c* dyn, void *ptr, const dyn_byte type, dyn_const_str info)
+trilean dyn_set_fct(dyn_c* dyn, void *ptr, const dyn_ushort type, dyn_const_str info)
 {
     dyn_free(dyn);
 
@@ -45,14 +45,13 @@ trilean dyn_set_fct(dyn_c* dyn, void *ptr, const dyn_byte type, dyn_const_str in
 
 
 trilean dyn_set_fct_ss(dyn_c* dyn, dyn_c* params,
-                     dyn_ushort length, dyn_char* code,
-                     dyn_const_str info)
+                       dyn_ushort length, dyn_char* code,
+                       dyn_const_str info)
 {
-    if( dyn_set_fct(dyn, NULL, 0, info) ) {
+    if( dyn_set_fct(dyn, NULL, length, info) ) {
         dyn_proc *proc = (dyn_proc*) malloc(sizeof(dyn_proc));
 
         if (proc) {
-            proc->length = length;
             proc->code = (dyn_char*) malloc(length);
 
             if (proc->code) {
@@ -70,7 +69,7 @@ trilean dyn_set_fct_ss(dyn_c* dyn, dyn_c* params,
             }
             free(proc);
         }
-        dyn->data.fct->type = 1;
+        //dyn->data.fct->type = 1;
         dyn_fct_free(dyn);
     }
 
@@ -80,7 +79,7 @@ trilean dyn_set_fct_ss(dyn_c* dyn, dyn_c* params,
 
 void dyn_fct_free(dyn_c* dyn)
 {
-    if (!dyn->data.fct->type) {
+    if (dyn->data.fct->type >= DYN_FCT_PROC) {
         dyn_proc *proc = (dyn_proc*) dyn->data.fct->ptr;
         dyn_free(&proc->params);
         free(proc->code);
@@ -89,12 +88,13 @@ void dyn_fct_free(dyn_c* dyn)
 
     if (dyn->data.fct->info != NULL)
         free(dyn->data.fct->info);
+
     free(dyn->data.fct);
 }
 
 trilean dyn_fct_copy(const dyn_c* dyn, dyn_c* copy)
 {
-    if (dyn->data.fct->type)
+    if (dyn->data.fct->type < DYN_FCT_PROC)
         return dyn_set_fct( copy,
                             dyn->data.fct->ptr,
                             dyn->data.fct->type,
@@ -104,7 +104,7 @@ trilean dyn_fct_copy(const dyn_c* dyn, dyn_c* copy)
 
     return dyn_set_fct_ss( copy,
                            &proc->params,
-                           proc->length,
+                           dyn->data.fct->type,
                            proc->code,
                            dyn->data.fct->info);
 }

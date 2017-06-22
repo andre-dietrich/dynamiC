@@ -143,7 +143,6 @@ struct dynamic_dict {
  */
 struct dynamic_procedure {
      dyn_c      params;     //!< type NONE for no, Otherwise dictionaries are used
-     dyn_ushort length;     //!< bytecode length
      dyn_char*  code;       //!< pointer to bytecode
 } __attribute__ ((packed));
 
@@ -153,9 +152,9 @@ struct dynamic_procedure {
  * todo.
  */
 struct dynamic_function {
-     void*     ptr;         //!< pointer to function
-     dyn_byte  type;        //!< 0 basic C-fct, 1 system C-fct, 2 procedure
-     dyn_str   info;        //!< info string
+     dyn_ushort  type;      //!< 0 basic C-fct, 1 system C-fct, else procedure (length of bytecode)
+     void*       ptr;       //!< pointer to function
+     dyn_str     info;      //!< info string
 } __attribute__ ((packed));
 
 
