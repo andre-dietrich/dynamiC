@@ -285,7 +285,6 @@ trilean dyn_dict_copy (const dyn_c* dict, dyn_c* copy)
                 return DYN_FALSE;
             }
         }
-        dyn_dict_set_loc(copy);
     }
     return DYN_TRUE;
 }
@@ -326,52 +325,4 @@ void dyn_dict_string_add (const dyn_c* dict, dyn_str string)
     }
     else
         dyn_strcat(string, "}");
-}
-
-dyn_char fct_set_loc (dyn_c* proc, dyn_c* loc)
-{
-  /*
-    if (proc->data.fct->type >= 2) {
-        dyn_proc *p = (dyn_proc*) proc->data.fct->ptr;
-        if (DYN_NOT_NONE(&p->params)) {
-            dyn_byte i = dyn_dict_has_key(&p->params, "");
-            if (i--) {
-                dyn_set_ref( DYN_DICT_GET_I_REF(&p->params, i), loc );
-                DYN_TYPE(DYN_DICT_GET_I_REF(&p->params, i)) = REFERENCE2;
-                return DYN_TRUE;
-            }
-        }
-    }
-*/
-    return DYN_FALSE;
-}
-
-
-trilean dyn_dict_set_loc(dyn_c* dyn)
-{
-    dyn_dict* dict = dyn->data.dict;
-    dyn_ushort length = DYN_DICT_LENGTH(dict);
-
-    dyn_c * ptr;
-
-    dyn_ushort i;
-    for (i=0; i<length; ++i) {
-        ptr = DYN_DICT_GET_I_REF(dyn, i);
-        if (DYN_TYPE(ptr) == FUNCTION) {
-            fct_set_loc(ptr, dyn);
-            /*if (!ptr->data.fct->type) {
-                ptr = (dyn_proc*) ptr->data.fct->ptr;
-                if (DYN_NOT_NONE(&p->params)) {
-                    dyn_byte pos = dyn_dict_has_key(&p->params, "");
-                    if (pos--) {
-                        dyn_set_ref( DYN_DICT_GET_I_REF(&p->params, pos), ptr );
-                        DYN_TYPE(DYN_DICT_GET_I_REF(&p->params, pos)) = REFERENCE2;
-                    }
-                }
-            }*/
-        }
-        else if (DYN_TYPE(ptr) == DICT)
-            dyn_dict_set_loc(ptr);
-    }
-    return DYN_TRUE;
 }

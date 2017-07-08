@@ -489,9 +489,6 @@ void dyn_move (dyn_c* from, dyn_c* to)
     else
         *to = *from;
 
-    if (DYN_TYPE(to) == DICT)
-        dyn_dict_set_loc(to);
-
     DYN_INIT(from);
 }
 

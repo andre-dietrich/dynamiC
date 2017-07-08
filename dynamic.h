@@ -206,8 +206,6 @@ dyn_c*     dyn_dict_insert     (dyn_c* dict, dyn_const_str key, dyn_c *value);
 trilean    dyn_dict_remove     (dyn_c* dict, dyn_const_str key);
 //! Get the reference to value stored at key
 dyn_c*     dyn_dict_get        (const dyn_c* dict, dyn_const_str key);
-//! Set the loc reference in all procedures (object-oriented)
-trilean    dyn_dict_set_loc    (dyn_c* dict);
 //! Set the available space for elements
 trilean    dyn_dict_resize     (dyn_c* dict, const dyn_ushort size);
 

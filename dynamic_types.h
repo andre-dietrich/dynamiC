@@ -86,9 +86,6 @@ typedef struct dynamic_list dyn_list;
 typedef struct dynamic_dict dyn_dict;
 /** @brief common dynamic procedure/bytecode data type
  */
-typedef struct dynamic_procedure dyn_proc;
-/** @brief common dynamic function pointer
- */
 typedef struct dynamic_function dyn_fct;
 
 /**
