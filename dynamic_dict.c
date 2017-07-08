@@ -330,6 +330,7 @@ void dyn_dict_string_add (const dyn_c* dict, dyn_str string)
 
 dyn_char fct_set_loc (dyn_c* proc, dyn_c* loc)
 {
+  /*
     if (proc->data.fct->type >= 2) {
         dyn_proc *p = (dyn_proc*) proc->data.fct->ptr;
         if (DYN_NOT_NONE(&p->params)) {
@@ -341,7 +342,7 @@ dyn_char fct_set_loc (dyn_c* proc, dyn_c* loc)
             }
         }
     }
-
+*/
     return DYN_FALSE;
 }
 

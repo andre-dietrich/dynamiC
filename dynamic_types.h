@@ -137,16 +137,6 @@ struct dynamic_dict {
 } __attribute__ ((packed));
 
 /**
- * @brief Basic container for bytecode.
- *
- * todo.
- */
-struct dynamic_procedure {
-     dyn_c      params;     //!< type NONE for no, Otherwise dictionaries are used
-     dyn_char*  code;       //!< pointer to bytecode
-} __attribute__ ((packed));
-
-/**
  * @brief Basic container/pointer to functions.
  *
  * todo.

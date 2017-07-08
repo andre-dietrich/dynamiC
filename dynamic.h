@@ -53,6 +53,8 @@ void       dyn_free            (dyn_c* dyn);
 trilean    dyn_copy            (const dyn_c* dyn,  dyn_c* copy);
 //! Move dynamic element to new reference, from is of type NONE afterwards
 void       dyn_move            (dyn_c* from, dyn_c* to);
+#define    DYN_MOVE(from, to)  *to = *from; DYN_INIT(from)
+
 /** @brief Reterns the length of an element.
  *
  *  @param[in] dyn value to check
@@ -238,9 +240,9 @@ void       dyn_dict_string_add(const dyn_c* dict, dyn_str string);
 #define   DYN_FCT_SYS   1
 #define   DYN_FCT_PROC  2
 
+#define   DYN_FCT_GET_CODE(dyn)  dyn->data.fct->ptr
+
 trilean   dyn_set_fct          (dyn_c* dyn, void *ptr, const dyn_ushort type, dyn_const_str info);
-trilean   dyn_set_fct_ss       (dyn_c* dyn, dyn_c* params, dyn_ushort length, dyn_char* code, dyn_const_str info);
-dyn_str   dyn_fct_get_ss       (const dyn_c* dyn);
 void      dyn_fct_free         (dyn_c* dyn);
 trilean   dyn_fct_copy         (const dyn_c* dyn, dyn_c* copy);
 /**@}*/
