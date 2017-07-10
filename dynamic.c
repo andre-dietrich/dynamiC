@@ -280,7 +280,7 @@ dyn_int dyn_get_int (const dyn_c* dyn)
 {
 START:
     switch (DYN_TYPE(dyn)) {
-        case BOOL:      //return dyn->data.b ? 1 : 0;
+        case BOOL:      return (dyn_int)dyn->data.b;
         case INTEGER:   return dyn->data.i;
         case FLOAT:     return (dyn_int)dyn->data.f;
         case REFERENCE2:

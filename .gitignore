@@ -11,3 +11,4 @@ test/test_operations.out
 test/test_string.out
 src/dynamic_string.o
 dynamic_string.o
+dynamic_encoding.o

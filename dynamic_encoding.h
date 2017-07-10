@@ -18,16 +18,16 @@
 #define ENC_STRING 10
 #define ENC_DICT   11
 
-//#define ENC_HALT   12
+#define ENC_HALT   12
 
 
-//dyn_ushort dyn_encoding_length(const dyn_c *dyn);
+dyn_ushort dyn_encoding_length(const dyn_c *dyn);
 
-//dyn_char*  dyn_encode     (dyn_char *to, const dyn_c *from);
+dyn_char*  dyn_encode     (dyn_char *to, const dyn_c *from);
 
-//dyn_char*  dyn_decode     (dyn_char code, dyn_char *from, dyn_c *to);
+dyn_char*  dyn_decode     (dyn_char code, dyn_char *from, dyn_c *to);
 
-//dyn_char*  dyn_decode_all (dyn_char *from, dyn_c *to);
+dyn_char*  dyn_decode_all (dyn_char *from, dyn_c *to);
 
 
 #endif
