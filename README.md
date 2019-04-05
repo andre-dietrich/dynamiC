@@ -5,16 +5,16 @@ Sets, Dictionaries and others ...
 
 ## Documentation
 
-https://ess-ovgu.github.io/dynamiC/
+https://andre-dietrich.github.io/dynamiC/
 
 ## Source
 
-https://github.com/ESS-OVGU/dynamiC
+https://github.com/andre-dietrich/dynamiC
 
 ## Installation
 
 ```bash
-$ git clone https://github.com/ESS-OVGU/dynamiC
+$ git clone https://github.com/andre-dietrich/dynamiC
 ```
 
 ## Usage
